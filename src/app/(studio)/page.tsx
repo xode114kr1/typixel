@@ -57,6 +57,14 @@ export default function Home() {
     asciiPlayback.current?.updateAppearance(appearance);
   }, [appearance, columns, selectedFile, tone]);
 
+  // 편집 패널의 설정만 초기화하고 재생 위치와 중앙 볼륨 값은 유지한다.
+  function resetAdjustments() {
+    setColumns(DEFAULT_ASCII_COLUMNS);
+    setTone(DEFAULT_ASCII_TONE);
+    setAppearance(DEFAULT_ASCII_APPEARANCE);
+    setOutputVolume(MAX_OUTPUT_VOLUME);
+  }
+
   // 공통 버튼을 눌렀을 때 브라우저의 기본 파일 선택창을 연다.
   function openFilePicker() {
     fileInput.current?.click();
@@ -217,6 +225,7 @@ export default function Home() {
           onToneChange={setTone}
           onAppearanceChange={setAppearance}
           onOutputVolumeChange={setOutputVolume}
+          onReset={resetAdjustments}
         />
       )}
 

@@ -11,6 +11,19 @@
   font-weight: 600;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.header .resetButton {
+  flex: none;
+  width: 2.75rem;
+  padding-inline: 0;
+}
+
 .control {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

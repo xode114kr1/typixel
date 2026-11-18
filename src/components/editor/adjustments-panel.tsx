@@ -1,3 +1,4 @@
+import { LuRotateCcw } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import type { AsciiAppearance, AsciiCharacterSet, AsciiTone } from "@/lib/ascii";
 import { MAX_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
@@ -13,6 +14,7 @@ type AdjustmentsPanelProps = {
   onToneChange: (tone: AsciiTone) => void;
   onAppearanceChange: (appearance: AsciiAppearance) => void;
   onOutputVolumeChange: (volume: number) => void;
+  onReset: () => void;
 };
 
 const toneControls = [
@@ -31,10 +33,22 @@ export function AdjustmentsPanel({
   onToneChange,
   onAppearanceChange,
   onOutputVolumeChange,
+  onReset,
 }: AdjustmentsPanelProps) {
   return (
     <aside className={styles.panel} aria-labelledby="adjustments-title">
-      <h2 id="adjustments-title">Adjustments</h2>
+      <div className={styles.header}>
+        <h2 id="adjustments-title">Adjustments</h2>
+        <Button
+          variant="ghost"
+          className={styles.resetButton}
+          aria-label="Reset adjustments"
+          title="Reset adjustments"
+          onClick={onReset}
+        >
+          <LuRotateCcw aria-hidden="true" />
+        </Button>
+      </div>
       <label className={styles.control}>
         Resolution
         <span aria-hidden="true">{columns} columns</span>
