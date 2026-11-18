@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type RefObject } from "react";
-import { LuPause, LuPlay, LuVolume2, LuVolumeX } from "react-icons/lu";
+import { LuMaximize, LuPause, LuPlay, LuVolume2, LuVolumeX } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { getPreviewGain, MAX_PREVIEW_VOLUME } from "@/lib/video-volume";
 import styles from "./playback-controls.module.css";
@@ -88,7 +88,7 @@ export function PlaybackControls({ videoRef, outputVolume, onError }: PlaybackCo
       <div className={styles.controls}>
         <Button
           variant="secondary"
-          className={styles.playButton}
+          className={styles.iconButton}
           aria-label={playback.paused ? "Play video" : "Pause video"}
           disabled={!playback.ready}
           onClick={togglePlayback}
@@ -110,6 +110,14 @@ export function PlaybackControls({ videoRef, outputVolume, onError }: PlaybackCo
         <span className={styles.time} aria-hidden="true">
           {formatTime(playback.time)} / {formatTime(playback.duration)}
         </span>
+        <Button
+          variant="secondary"
+          className={styles.iconButton}
+          aria-label="Enter fullscreen"
+          disabled
+        >
+          <LuMaximize aria-hidden="true" />
+        </Button>
       </div>
       <label className={styles.volume}>
         {previewGain === 0 ? <LuVolumeX aria-hidden="true" /> : <LuVolume2 aria-hidden="true" />}
