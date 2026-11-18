@@ -6,7 +6,7 @@ import { AdjustmentsPanel } from "@/components/editor/adjustments-panel";
 import { PlaybackControls } from "@/components/player/playback-controls";
 import { Button } from "@/components/ui/button";
 import { startAsciiPlayback } from "@/lib/ascii-playback";
-import { DEFAULT_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
+import { DEFAULT_ASCII_BRIGHTNESS, DEFAULT_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
 import styles from "./home.module.css";
 
 export default function Home() {
@@ -22,6 +22,7 @@ export default function Home() {
   const [playbackError, setPlaybackError] = useState("");
   const [captureError, setCaptureError] = useState("");
   const [columns, setColumns] = useState(DEFAULT_ASCII_COLUMNS);
+  const [brightness, setBrightness] = useState(DEFAULT_ASCII_BRIGHTNESS);
 
   // 선택한 파일을 브라우저에서 직접 재생하고, 영상이 바뀌거나 페이지를 떠나면 URL을 해제한다.
   useEffect(() => {
@@ -45,10 +46,11 @@ export default function Home() {
     };
   }, [selectedFile]);
 
-  // 해상도 변경과 영상 교체 시 현재 슬라이더 값을 변환기에 전달한다.
+  // 설정이 바뀌거나 영상을 교체하면 현재 슬라이더 값을 변환기에 전달한다.
   useEffect(() => {
     asciiPlayback.current?.updateColumns(columns);
-  }, [columns, selectedFile]);
+    asciiPlayback.current?.updateBrightness(brightness);
+  }, [brightness, columns, selectedFile]);
 
   // 공통 버튼을 눌렀을 때 브라우저의 기본 파일 선택창을 연다.
   function openFilePicker() {
@@ -193,7 +195,14 @@ export default function Home() {
         </div>
       </div>
 
-      {selectedFile && <AdjustmentsPanel columns={columns} onColumnsChange={setColumns} />}
+      {selectedFile && (
+        <AdjustmentsPanel
+          columns={columns}
+          brightness={brightness}
+          onColumnsChange={setColumns}
+          onBrightnessChange={setBrightness}
+        />
+      )}
 
       <div className={styles.selectionFeedback}>
         <p role="status">{selectedFile && <>Selected video: <strong>{selectedFile.name}</strong></>}</p>

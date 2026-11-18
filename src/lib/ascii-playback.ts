@@ -1,4 +1,4 @@
-import { captureAsciiFrame, DEFAULT_ASCII_COLUMNS } from "./capture-ascii-frame";
+import { captureAsciiFrame, DEFAULT_ASCII_BRIGHTNESS, DEFAULT_ASCII_COLUMNS } from "./capture-ascii-frame";
 
 /** 영상의 재생 상태에 맞춰 ASCII 출력을 갱신하고 정리 함수를 반환한다. */
 export function startAsciiPlayback(
@@ -19,6 +19,7 @@ export function startAsciiPlayback(
   let characterAspectRatio = 0;
   let captureFailed = false;
   let columns = DEFAULT_ASCII_COLUMNS;
+  let brightness = DEFAULT_ASCII_BRIGHTNESS;
 
   // React를 다시 렌더링하지 않고 미리보기의 텍스트만 갱신한다.
   const renderFrame = () => {
@@ -26,7 +27,7 @@ export function startAsciiPlayback(
     if (!video.videoWidth || !characterAspectRatio) return;
 
     try {
-      const frame = captureAsciiFrame(video, characterAspectRatio, context, columns);
+      const frame = captureAsciiFrame(video, characterAspectRatio, context, columns, brightness);
       if (output.textContent !== frame) output.textContent = frame;
       lastTime = video.currentTime;
       if (captureFailed) onError("");
@@ -98,6 +99,13 @@ export function startAsciiPlayback(
     measureCharacter();
   }
 
+  // 밝기 변경은 글자 크기를 유지하므로 현재 프레임만 다시 변환한다.
+  function updateBrightness(nextBrightness: number) {
+    if (brightness === nextBrightness) return;
+    brightness = nextBrightness;
+    renderFrame();
+  }
+
   // 영상이 바뀌면 이전 영상의 프레임 예약과 이벤트 연결을 정리한다.
   function stop() {
     cancelFrame();
@@ -111,5 +119,5 @@ export function startAsciiPlayback(
     output.textContent = "";
   }
 
-  return { updateColumns, stop };
+  return { updateColumns, updateBrightness, stop };
 }
