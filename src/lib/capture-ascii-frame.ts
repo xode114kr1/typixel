@@ -10,7 +10,8 @@ export function captureAsciiFrame(
   context: CanvasRenderingContext2D,
   targetColumns: number,
   tone: AsciiTone,
-): string {
+  characters: string,
+) {
   // 문자의 폭과 줄 높이가 다르므로 실제 표시 비율에 맞춰 행 수를 보정한다.
   const rowsPerColumn = (video.videoHeight / video.videoWidth) * characterAspectRatio;
   const columns = Math.max(1, Math.min(targetColumns, Math.floor(MAX_ROWS / rowsPerColumn)));
@@ -28,10 +29,10 @@ export function captureAsciiFrame(
     let line = "";
     for (let column = 0; column < columns; column += 1) {
       const index = (row * columns + column) * 4;
-      line += rgbToAscii(data[index], data[index + 1], data[index + 2], tone);
+      line += rgbToAscii(data[index], data[index + 1], data[index + 2], tone, characters);
     }
     lines.push(line);
   }
 
-  return lines.join("\n");
+  return { lines, pixels: data };
 }

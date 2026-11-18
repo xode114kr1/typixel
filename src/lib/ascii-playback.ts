@@ -1,5 +1,12 @@
-import { DEFAULT_ASCII_TONE, type AsciiTone } from "./ascii";
+import {
+  ASCII_CHARACTER_SETS,
+  DEFAULT_ASCII_APPEARANCE,
+  DEFAULT_ASCII_TONE,
+  type AsciiAppearance,
+  type AsciiTone,
+} from "./ascii";
 import { captureAsciiFrame, DEFAULT_ASCII_COLUMNS } from "./capture-ascii-frame";
+import { renderAsciiColor } from "./render-ascii-color";
 
 /** 영상의 재생 상태에 맞춰 ASCII 출력을 갱신하고 정리 함수를 반환한다. */
 export function startAsciiPlayback(
@@ -21,6 +28,8 @@ export function startAsciiPlayback(
   let captureFailed = false;
   let columns = DEFAULT_ASCII_COLUMNS;
   let tone = DEFAULT_ASCII_TONE;
+  let characterSet = DEFAULT_ASCII_APPEARANCE.characterSet;
+  let mode = DEFAULT_ASCII_APPEARANCE.mode;
 
   // React를 다시 렌더링하지 않고 미리보기의 텍스트만 갱신한다.
   const renderFrame = () => {
@@ -28,8 +37,15 @@ export function startAsciiPlayback(
     if (!video.videoWidth || !characterAspectRatio) return;
 
     try {
-      const frame = captureAsciiFrame(video, characterAspectRatio, context, columns, tone);
-      if (output.textContent !== frame) output.textContent = frame;
+      const { lines, pixels } = captureAsciiFrame(
+        video, characterAspectRatio, context, columns, tone, ASCII_CHARACTER_SETS[characterSet],
+      );
+      if (mode === "color") {
+        output.replaceChildren(renderAsciiColor(lines, pixels));
+      } else {
+        const frame = lines.join("\n");
+        if (output.childElementCount || output.textContent !== frame) output.textContent = frame;
+      }
       lastTime = video.currentTime;
       if (captureFailed) onError("");
       captureFailed = false;
@@ -107,6 +123,14 @@ export function startAsciiPlayback(
     renderFrame();
   }
 
+  // 문자 집합과 컬러 모드는 일시정지 상태에서도 바로 반영한다.
+  function updateAppearance(nextAppearance: AsciiAppearance) {
+    if (characterSet === nextAppearance.characterSet && mode === nextAppearance.mode) return;
+    characterSet = nextAppearance.characterSet;
+    mode = nextAppearance.mode;
+    renderFrame();
+  }
+
   // 영상이 바뀌면 이전 영상의 프레임 예약과 이벤트 연결을 정리한다.
   function stop() {
     cancelFrame();
@@ -120,5 +144,5 @@ export function startAsciiPlayback(
     output.textContent = "";
   }
 
-  return { updateColumns, updateTone, stop };
+  return { updateColumns, updateTone, updateAppearance, stop };
 }

@@ -6,7 +6,7 @@ import { AdjustmentsPanel } from "@/components/editor/adjustments-panel";
 import { PlaybackControls } from "@/components/player/playback-controls";
 import { Button } from "@/components/ui/button";
 import { startAsciiPlayback } from "@/lib/ascii-playback";
-import { DEFAULT_ASCII_TONE } from "@/lib/ascii";
+import { DEFAULT_ASCII_APPEARANCE, DEFAULT_ASCII_TONE } from "@/lib/ascii";
 import { DEFAULT_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
 import styles from "./home.module.css";
 
@@ -24,6 +24,7 @@ export default function Home() {
   const [captureError, setCaptureError] = useState("");
   const [columns, setColumns] = useState(DEFAULT_ASCII_COLUMNS);
   const [tone, setTone] = useState(DEFAULT_ASCII_TONE);
+  const [appearance, setAppearance] = useState(DEFAULT_ASCII_APPEARANCE);
 
   // 선택한 파일을 브라우저에서 직접 재생하고, 영상이 바뀌거나 페이지를 떠나면 URL을 해제한다.
   useEffect(() => {
@@ -51,7 +52,8 @@ export default function Home() {
   useEffect(() => {
     asciiPlayback.current?.updateColumns(columns);
     asciiPlayback.current?.updateTone(tone);
-  }, [columns, selectedFile, tone]);
+    asciiPlayback.current?.updateAppearance(appearance);
+  }, [appearance, columns, selectedFile, tone]);
 
   // 공통 버튼을 눌렀을 때 브라우저의 기본 파일 선택창을 연다.
   function openFilePicker() {
@@ -161,7 +163,10 @@ export default function Home() {
               preload="auto"
               onError={() => setPlaybackError("This video could not be played. Try another file.")}
             />
-            <div className={styles.asciiSurface}>
+            <div
+              className={styles.asciiSurface}
+              style={{ backgroundColor: appearance.backgroundColor }}
+            >
               <div
                 className={styles.asciiText}
                 style={{ fontSize: `calc(2.4cqi * ${DEFAULT_ASCII_COLUMNS} / ${columns})` }}
@@ -200,8 +205,10 @@ export default function Home() {
         <AdjustmentsPanel
           columns={columns}
           tone={tone}
+          appearance={appearance}
           onColumnsChange={setColumns}
           onToneChange={setTone}
+          onAppearanceChange={setAppearance}
         />
       )}
 

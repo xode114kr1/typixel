@@ -1,4 +1,22 @@
-const ASCII_CHARACTERS = " .:-=+*#%@";
+export const ASCII_CHARACTER_SETS = {
+  standard: " .:-=+*#%@",
+  minimal: " .:*#",
+  binary: " 01",
+} as const;
+
+export type AsciiCharacterSet = keyof typeof ASCII_CHARACTER_SETS;
+
+export type AsciiAppearance = {
+  characterSet: AsciiCharacterSet;
+  mode: "monochrome" | "color";
+  backgroundColor: string;
+};
+
+export const DEFAULT_ASCII_APPEARANCE: AsciiAppearance = {
+  characterSet: "standard",
+  mode: "monochrome",
+  backgroundColor: "#000000",
+};
 
 export type AsciiTone = {
   brightness: number;
@@ -20,10 +38,11 @@ export function rgbToAscii(
   green: number,
   blue: number,
   tone = DEFAULT_ASCII_TONE,
+  characters: string = ASCII_CHARACTER_SETS.standard,
 ): string {
   // 사람이 느끼는 밝기에 맞춰 색상 채널마다 다른 가중치를 적용한다.
   const brightness = 0.299 * red + 0.587 * green + 0.114 * blue;
-  const lastIndex = ASCII_CHARACTERS.length - 1;
+  const lastIndex = characters.length - 1;
   const adjustedBrightness = Math.min(255, brightness * (tone.brightness / 100));
   // 중간 밝기를 기준으로 밝고 어두운 쪽의 차이를 확대하거나 줄인다.
   const midpoint = 255 / 2;
@@ -35,5 +54,5 @@ export function rgbToAscii(
 
   const index = Math.round(corrected * lastIndex);
 
-  return ASCII_CHARACTERS.charAt(index);
+  return characters.charAt(index);
 }
