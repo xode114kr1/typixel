@@ -58,8 +58,28 @@
 }
 
 .preview {
-  width: min(100%, 62rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+  width: min(100%, 76rem);
   padding-block-start: clamp(2rem, 6vh, 4rem);
+}
+
+.preview .dropZone,
+.preview .rightsNote {
+  margin-block-start: 0;
+}
+
+@media (min-width: 68rem) {
+  .preview {
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 18rem);
+  }
+
+  .preview .selectionFeedback,
+  .preview .rightsNote {
+    grid-column: 1 / -1;
+  }
 }
 
 .player {

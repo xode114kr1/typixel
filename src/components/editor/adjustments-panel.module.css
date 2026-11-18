@@ -1,0 +1,12 @@
+.panel {
+  padding: 1.25rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  background: var(--color-sidebar);
+  text-align: start;
+}
+
+.panel h2 {
+  font-size: 1rem;
+  font-weight: 600;
+}

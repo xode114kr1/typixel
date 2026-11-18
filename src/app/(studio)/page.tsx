@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import { LuLockKeyhole, LuUpload } from "react-icons/lu";
+import { AdjustmentsPanel } from "@/components/editor/adjustments-panel";
 import { PlaybackControls } from "@/components/player/playback-controls";
 import { Button } from "@/components/ui/button";
 import { startAsciiPlayback } from "@/lib/ascii-playback";
@@ -114,7 +115,7 @@ export default function Home() {
     <section
       className={`${styles.upload} ${selectedFile ? styles.preview : ""}`}
       aria-labelledby={selectedFile ? undefined : "upload-title"}
-      aria-label={selectedFile ? "Video player" : undefined}
+      aria-label={selectedFile ? "Video editor" : undefined}
     >
       {!selectedFile && (
         <>
@@ -178,6 +179,8 @@ export default function Home() {
           </Button>
         </div>
       </div>
+
+      {selectedFile && <AdjustmentsPanel />}
 
       <div className={styles.selectionFeedback}>
         <p role="status">{selectedFile && <>Selected video: <strong>{selectedFile.name}</strong></>}</p>
