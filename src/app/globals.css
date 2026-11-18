@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+@theme static {
+  --color-canvas: #212121;
+  --color-sidebar: #171717;
+  --color-line: #3a3a3a;
+  --color-copy: #ececec;
+  --color-muted: #a8a8a8;
+  --font-sans: Inter, system-ui, sans-serif;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-copy);
+  font-family: var(--font-sans);
+}

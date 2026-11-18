@@ -1,0 +1,52 @@
+.studio {
+  display: grid;
+  grid-template-columns: 16rem minmax(0, 1fr);
+  min-height: 100dvh;
+}
+
+.sidebar {
+  padding: 1.25rem;
+  border-inline-end: 1px solid var(--color-line);
+  background: var(--color-sidebar);
+}
+
+.wordmark, .mobileWordmark {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+.content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  min-height: 4.25rem;
+  align-items: center;
+  gap: 0.875rem;
+  padding-inline: clamp(1rem, 3vw, 2rem);
+  border-block-end: 1px solid var(--color-line);
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.mobileWordmark {
+  display: none;
+  color: var(--color-copy);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding-inline: clamp(1rem, 4vw, 3.5rem);
+}
+
+@media (max-width: 47.99rem) {
+  .studio { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { display: none; }
+  .mobileWordmark { display: inline; }
+}
