@@ -66,9 +66,69 @@
   display: block;
   width: 100%;
   max-height: min(60dvh, 36rem);
-  margin-block-end: 1rem;
   border-radius: var(--radius-control);
   background: #000;
+}
+
+.frameComparison {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+  margin-block-end: 1rem;
+  text-align: start;
+}
+
+.frameComparison figcaption {
+  margin-block-end: 0.5rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.asciiSurface {
+  container-type: inline-size;
+  overflow: auto;
+  max-height: min(60dvh, 36rem);
+  border-radius: var(--radius-control);
+  background: #000;
+}
+
+.asciiText {
+  position: relative;
+  font-family: ui-monospace, monospace;
+  font-size: 2.4cqi;
+  line-height: 1.15;
+}
+
+.asciiText pre {
+  font: inherit;
+  text-align: center;
+  white-space: pre;
+}
+
+.characterSample {
+  position: absolute;
+  visibility: hidden;
+}
+
+.asciiPlaceholder {
+  display: block;
+  padding: 1rem;
+  color: var(--color-muted);
+  font: 0.875rem var(--font-sans);
+}
+
+.previewActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+@media (max-width: 63.99rem) {
+  .frameComparison {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .selectionFeedback p:not(:empty) {
