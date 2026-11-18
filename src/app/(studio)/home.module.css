@@ -93,6 +93,12 @@
   max-height: min(60dvh, 36rem);
   border-radius: var(--radius-control);
   background: #000;
+  cursor: pointer;
+}
+
+.asciiSurface:focus-visible {
+  outline: 2px solid var(--color-copy);
+  outline-offset: -2px;
 }
 
 .asciiText {

@@ -66,6 +66,25 @@ export default function Home() {
     setOutputVolume(MAX_OUTPUT_VOLUME);
   }
 
+  // 화면과 재생 버튼 모두 같은 영상 요소의 재생 상태를 전환한다.
+  async function togglePlayback() {
+    const video = videoElement.current;
+    if (!video || video.error || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
+
+    if (!video.paused) {
+      video.pause();
+      return;
+    }
+
+    try {
+      await video.play();
+      setPlaybackError("");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      setPlaybackError("Playback could not start. Try playing the video again.");
+    }
+  }
+
   // 공통 버튼을 눌렀을 때 브라우저의 기본 파일 선택창을 연다.
   function openFilePicker() {
     fileInput.current?.click();
@@ -177,6 +196,15 @@ export default function Home() {
             <div
               className={styles.asciiSurface}
               style={{ backgroundColor: appearance.backgroundColor }}
+              role="button"
+              tabIndex={0}
+              aria-label="Play or pause video"
+              onClick={togglePlayback}
+              onKeyDown={(event) => {
+                if (event.key !== "Enter" && event.key !== " ") return;
+                event.preventDefault();
+                if (!event.repeat) void togglePlayback();
+              }}
             >
               <div
                 className={styles.asciiText}
@@ -193,7 +221,7 @@ export default function Home() {
               videoRef={videoElement}
               playerRef={playerElement}
               outputVolume={outputVolume}
-              onError={setPlaybackError}
+              onTogglePlayback={togglePlayback}
             />
           </div>
         ) : (

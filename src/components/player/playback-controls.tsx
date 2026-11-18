@@ -10,7 +10,7 @@ type PlaybackControlsProps = {
   videoRef: RefObject<HTMLVideoElement | null>;
   playerRef: RefObject<HTMLDivElement | null>;
   outputVolume: number;
-  onError: (message: string) => void;
+  onTogglePlayback: () => void;
 };
 
 /** 재생 시간을 분과 초로 표시한다. */
@@ -19,7 +19,7 @@ function formatTime(seconds: number) {
   return `${Math.floor(wholeSeconds / 60)}:${String(wholeSeconds % 60).padStart(2, "0")}`;
 }
 
-export function PlaybackControls({ videoRef, playerRef, outputVolume, onError }: PlaybackControlsProps) {
+export function PlaybackControls({ videoRef, playerRef, outputVolume, onTogglePlayback }: PlaybackControlsProps) {
   const [playback, setPlayback] = useState({ ready: false, paused: true, time: 0, duration: 0 });
   const [previewVolume, setPreviewVolume] = useState(MAX_PREVIEW_VOLUME);
   const [fullscreen, setFullscreen] = useState({ available: false, active: false });
@@ -92,25 +92,6 @@ export function PlaybackControls({ videoRef, playerRef, outputVolume, onError }:
     }
   }
 
-  // 재생과 일시정지는 원본 영상에 적용되어 화면과 오디오가 함께 움직인다.
-  async function togglePlayback() {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (!video.paused) {
-      video.pause();
-      return;
-    }
-
-    try {
-      await video.play();
-      onError("");
-    } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") return;
-      onError("Playback could not start. Try playing the video again.");
-    }
-  }
-
   // 슬라이더에서 선택한 시각으로 원본 영상의 재생 위치를 옮긴다.
   function seek(time: number) {
     const video = videoRef.current;
@@ -125,7 +106,7 @@ export function PlaybackControls({ videoRef, playerRef, outputVolume, onError }:
           className={styles.iconButton}
           aria-label={playback.paused ? "Play video" : "Pause video"}
           disabled={!playback.ready}
-          onClick={togglePlayback}
+          onClick={onTogglePlayback}
         >
           {playback.paused ? <LuPlay aria-hidden="true" /> : <LuPause aria-hidden="true" />}
         </Button>
