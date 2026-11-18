@@ -6,11 +6,8 @@ import { AdjustmentsPanel } from "@/components/editor/adjustments-panel";
 import { PlaybackControls } from "@/components/player/playback-controls";
 import { Button } from "@/components/ui/button";
 import { startAsciiPlayback } from "@/lib/ascii-playback";
-import {
-  DEFAULT_ASCII_BRIGHTNESS,
-  DEFAULT_ASCII_COLUMNS,
-  DEFAULT_ASCII_CONTRAST,
-} from "@/lib/capture-ascii-frame";
+import { DEFAULT_ASCII_TONE } from "@/lib/ascii";
+import { DEFAULT_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
 import styles from "./home.module.css";
 
 export default function Home() {
@@ -26,8 +23,7 @@ export default function Home() {
   const [playbackError, setPlaybackError] = useState("");
   const [captureError, setCaptureError] = useState("");
   const [columns, setColumns] = useState(DEFAULT_ASCII_COLUMNS);
-  const [brightness, setBrightness] = useState(DEFAULT_ASCII_BRIGHTNESS);
-  const [contrast, setContrast] = useState(DEFAULT_ASCII_CONTRAST);
+  const [tone, setTone] = useState(DEFAULT_ASCII_TONE);
 
   // 선택한 파일을 브라우저에서 직접 재생하고, 영상이 바뀌거나 페이지를 떠나면 URL을 해제한다.
   useEffect(() => {
@@ -54,9 +50,8 @@ export default function Home() {
   // 설정이 바뀌거나 영상을 교체하면 현재 슬라이더 값을 변환기에 전달한다.
   useEffect(() => {
     asciiPlayback.current?.updateColumns(columns);
-    asciiPlayback.current?.updateBrightness(brightness);
-    asciiPlayback.current?.updateContrast(contrast);
-  }, [brightness, columns, contrast, selectedFile]);
+    asciiPlayback.current?.updateTone(tone);
+  }, [columns, selectedFile, tone]);
 
   // 공통 버튼을 눌렀을 때 브라우저의 기본 파일 선택창을 연다.
   function openFilePicker() {
@@ -204,11 +199,9 @@ export default function Home() {
       {selectedFile && (
         <AdjustmentsPanel
           columns={columns}
-          brightness={brightness}
-          contrast={contrast}
+          tone={tone}
           onColumnsChange={setColumns}
-          onBrightnessChange={setBrightness}
-          onContrastChange={setContrast}
+          onToneChange={setTone}
         />
       )}
 

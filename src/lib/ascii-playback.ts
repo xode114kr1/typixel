@@ -1,9 +1,5 @@
-import {
-  captureAsciiFrame,
-  DEFAULT_ASCII_BRIGHTNESS,
-  DEFAULT_ASCII_COLUMNS,
-  DEFAULT_ASCII_CONTRAST,
-} from "./capture-ascii-frame";
+import { DEFAULT_ASCII_TONE, type AsciiTone } from "./ascii";
+import { captureAsciiFrame, DEFAULT_ASCII_COLUMNS } from "./capture-ascii-frame";
 
 /** 영상의 재생 상태에 맞춰 ASCII 출력을 갱신하고 정리 함수를 반환한다. */
 export function startAsciiPlayback(
@@ -24,8 +20,7 @@ export function startAsciiPlayback(
   let characterAspectRatio = 0;
   let captureFailed = false;
   let columns = DEFAULT_ASCII_COLUMNS;
-  let brightness = DEFAULT_ASCII_BRIGHTNESS;
-  let contrast = DEFAULT_ASCII_CONTRAST;
+  let tone = DEFAULT_ASCII_TONE;
 
   // React를 다시 렌더링하지 않고 미리보기의 텍스트만 갱신한다.
   const renderFrame = () => {
@@ -33,7 +28,7 @@ export function startAsciiPlayback(
     if (!video.videoWidth || !characterAspectRatio) return;
 
     try {
-      const frame = captureAsciiFrame(video, characterAspectRatio, context, columns, brightness, contrast);
+      const frame = captureAsciiFrame(video, characterAspectRatio, context, columns, tone);
       if (output.textContent !== frame) output.textContent = frame;
       lastTime = video.currentTime;
       if (captureFailed) onError("");
@@ -105,17 +100,10 @@ export function startAsciiPlayback(
     measureCharacter();
   }
 
-  // 밝기 변경은 글자 크기를 유지하므로 현재 프레임만 다시 변환한다.
-  function updateBrightness(nextBrightness: number) {
-    if (brightness === nextBrightness) return;
-    brightness = nextBrightness;
-    renderFrame();
-  }
-
-  // 대비 변경은 원본 영상의 재생 위치를 유지하며 현재 프레임에 반영한다.
-  function updateContrast(nextContrast: number) {
-    if (contrast === nextContrast) return;
-    contrast = nextContrast;
+  // 명암 설정이 바뀌면 영상의 재생 위치를 유지한 채 현재 프레임을 다시 그린다.
+  function updateTone(nextTone: AsciiTone) {
+    if (tone === nextTone) return;
+    tone = nextTone;
     renderFrame();
   }
 
@@ -132,5 +120,5 @@ export function startAsciiPlayback(
     output.textContent = "";
   }
 
-  return { updateColumns, updateBrightness, updateContrast, stop };
+  return { updateColumns, updateTone, stop };
 }

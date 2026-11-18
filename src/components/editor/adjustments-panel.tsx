@@ -1,21 +1,25 @@
+import type { AsciiTone } from "@/lib/ascii";
 import styles from "./adjustments-panel.module.css";
 
 type AdjustmentsPanelProps = {
   columns: number;
-  brightness: number;
-  contrast: number;
+  tone: AsciiTone;
   onColumnsChange: (columns: number) => void;
-  onBrightnessChange: (brightness: number) => void;
-  onContrastChange: (contrast: number) => void;
+  onToneChange: (tone: AsciiTone) => void;
 };
+
+const toneControls = [
+  { key: "brightness", label: "Brightness", min: 0, max: 200, step: 1, unit: "%" },
+  { key: "contrast", label: "Contrast", min: 0, max: 200, step: 1, unit: "%" },
+  { key: "gamma", label: "Gamma", min: 0.1, max: 3, step: 0.1, unit: "" },
+  { key: "threshold", label: "Threshold", min: 0, max: 100, step: 1, unit: "%" },
+] as const;
 
 export function AdjustmentsPanel({
   columns,
-  brightness,
-  contrast,
+  tone,
   onColumnsChange,
-  onBrightnessChange,
-  onContrastChange,
+  onToneChange,
 }: AdjustmentsPanelProps) {
   return (
     <aside className={styles.panel} aria-labelledby="adjustments-title">
@@ -32,30 +36,21 @@ export function AdjustmentsPanel({
           onChange={(event) => onColumnsChange(event.currentTarget.valueAsNumber)}
         />
       </label>
-      <label className={styles.control}>
-        Brightness
-        <span aria-hidden="true">{brightness}%</span>
-        <input
-          type="range"
-          min={0}
-          max={200}
-          value={brightness}
-          aria-valuetext={`${brightness}%`}
-          onChange={(event) => onBrightnessChange(event.currentTarget.valueAsNumber)}
-        />
-      </label>
-      <label className={styles.control}>
-        Contrast
-        <span aria-hidden="true">{contrast}%</span>
-        <input
-          type="range"
-          min={0}
-          max={200}
-          value={contrast}
-          aria-valuetext={`${contrast}%`}
-          onChange={(event) => onContrastChange(event.currentTarget.valueAsNumber)}
-        />
-      </label>
+      {toneControls.map(({ key, label, min, max, step, unit }) => (
+        <label key={key} className={styles.control}>
+          {label}
+          <span aria-hidden="true">{tone[key]}{unit}</span>
+          <input
+            type="range"
+            min={min}
+            max={max}
+            step={step}
+            value={tone[key]}
+            aria-valuetext={`${tone[key]}${unit}`}
+            onChange={(event) => onToneChange({ ...tone, [key]: event.currentTarget.valueAsNumber })}
+          />
+        </label>
+      ))}
     </aside>
   );
 }
