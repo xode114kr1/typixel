@@ -1,4 +1,5 @@
 import type { AsciiAppearance, AsciiCharacterSet, AsciiTone } from "@/lib/ascii";
+import { MAX_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
 import { MAX_OUTPUT_VOLUME } from "@/lib/video-volume";
 import styles from "./adjustments-panel.module.css";
 
@@ -38,8 +39,8 @@ export function AdjustmentsPanel({
         <span aria-hidden="true">{columns} columns</span>
         <input
           type="range"
-          min={32}
-          max={96}
+          min={64}
+          max={MAX_ASCII_COLUMNS}
           value={columns}
           aria-valuetext={`${columns} columns`}
           onChange={(event) => onColumnsChange(event.currentTarget.valueAsNumber)}

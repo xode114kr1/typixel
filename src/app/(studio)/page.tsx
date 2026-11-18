@@ -171,7 +171,7 @@ export default function Home() {
             >
               <div
                 className={styles.asciiText}
-                style={{ fontSize: `calc(2.4cqi * ${DEFAULT_ASCII_COLUMNS} / ${columns})` }}
+                style={{ fontSize: `calc(153.6cqi / ${columns})` }}
               >
                 <span className={styles.characterSample} ref={characterSample} aria-hidden="true">
                   M

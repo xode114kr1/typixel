@@ -1,6 +1,7 @@
 import { rgbToAscii, type AsciiTone } from "./ascii";
 
-export const DEFAULT_ASCII_COLUMNS = 64;
+export const DEFAULT_ASCII_COLUMNS = 128;
+export const MAX_ASCII_COLUMNS = 160;
 const MAX_ROWS = 160;
 
 /** 현재 영상 프레임을 축소해 픽셀 하나를 문자 하나로 변환한다. */
