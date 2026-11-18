@@ -28,6 +28,11 @@
   background: var(--color-sidebar);
 }
 
+.dropZoneActive {
+  border-color: var(--color-muted);
+  background: var(--color-surface);
+}
+
 .dropZone .uploadIcon {
   width: 3rem;
   height: 3rem;
