@@ -14,6 +14,7 @@ import styles from "./home.module.css";
 export default function Home() {
   const fileInput = useRef<HTMLInputElement>(null);
   const videoElement = useRef<HTMLVideoElement>(null);
+  const playerElement = useRef<HTMLDivElement>(null);
   const characterSample = useRef<HTMLSpanElement>(null);
   const asciiOutput = useRef<HTMLPreElement>(null);
   const asciiPlayback = useRef<ReturnType<typeof startAsciiPlayback>>(null);
@@ -165,7 +166,7 @@ export default function Home() {
         onDrop={handleDrop}
       >
         {selectedFile ? (
-          <div className={styles.player}>
+          <div className={styles.player} ref={playerElement}>
             <video
               ref={videoElement}
               hidden
@@ -190,6 +191,7 @@ export default function Home() {
             </div>
             <PlaybackControls
               videoRef={videoElement}
+              playerRef={playerElement}
               outputVolume={outputVolume}
               onError={setPlaybackError}
             />

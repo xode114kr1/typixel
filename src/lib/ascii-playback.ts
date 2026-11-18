@@ -24,6 +24,7 @@ export function startAsciiPlayback(
   const usesVideoFrames = typeof video.requestVideoFrameCallback === "function";
   let pendingFrame: number | null = null;
   let lastTime = -1;
+  let renderedRows = 0;
   let characterAspectRatio = 0;
   let captureFailed = false;
   let columns = DEFAULT_ASCII_COLUMNS;
@@ -40,6 +41,11 @@ export function startAsciiPlayback(
       const { lines, pixels } = captureAsciiFrame(
         video, characterAspectRatio, context, columns, tone, ASCII_CHARACTER_SETS[characterSet],
       );
+      // 전체 화면에서 실제 줄 수를 기준으로 사용 가능한 높이에 맞춘다.
+      if (renderedRows !== lines.length) {
+        renderedRows = lines.length;
+        output.style.setProperty("--ascii-rows", String(renderedRows));
+      }
       if (mode === "color") {
         output.replaceChildren(renderAsciiColor(lines, pixels));
       } else {
@@ -142,6 +148,7 @@ export function startAsciiPlayback(
     video.removeEventListener("pause", finishPlayback);
     video.removeEventListener("ended", finishPlayback);
     output.textContent = "";
+    output.style.removeProperty("--ascii-rows");
   }
 
   return { updateColumns, updateTone, updateAppearance, stop };

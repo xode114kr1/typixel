@@ -107,6 +107,28 @@
   white-space: pre;
 }
 
+.player:fullscreen {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  margin: 0;
+  padding: clamp(0.5rem, 2vmin, 1.25rem);
+  overflow: hidden;
+  background: var(--color-sidebar);
+}
+
+.player:fullscreen .asciiSurface {
+  display: grid;
+  align-items: center;
+  container-type: size;
+  max-height: none;
+  overflow: hidden;
+}
+
+.player:fullscreen .asciiText pre {
+  font-size: min(1em, calc(98cqh / var(--ascii-rows, 1) / 1.15));
+  line-height: 1.15;
+}
+
 .characterSample {
   position: absolute;
   visibility: hidden;

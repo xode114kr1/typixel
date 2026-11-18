@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState, type RefObject } from "react";
-import { LuMaximize, LuPause, LuPlay, LuVolume2, LuVolumeX } from "react-icons/lu";
+import { LuMaximize, LuMinimize, LuPause, LuPlay, LuVolume2, LuVolumeX } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { getPreviewGain, MAX_PREVIEW_VOLUME } from "@/lib/video-volume";
 import styles from "./playback-controls.module.css";
 
 type PlaybackControlsProps = {
   videoRef: RefObject<HTMLVideoElement | null>;
+  playerRef: RefObject<HTMLDivElement | null>;
   outputVolume: number;
   onError: (message: string) => void;
 };
@@ -18,9 +19,11 @@ function formatTime(seconds: number) {
   return `${Math.floor(wholeSeconds / 60)}:${String(wholeSeconds % 60).padStart(2, "0")}`;
 }
 
-export function PlaybackControls({ videoRef, outputVolume, onError }: PlaybackControlsProps) {
+export function PlaybackControls({ videoRef, playerRef, outputVolume, onError }: PlaybackControlsProps) {
   const [playback, setPlayback] = useState({ ready: false, paused: true, time: 0, duration: 0 });
   const [previewVolume, setPreviewVolume] = useState(MAX_PREVIEW_VOLUME);
+  const [fullscreen, setFullscreen] = useState({ available: false, active: false });
+  const [fullscreenError, setFullscreenError] = useState("");
   const previewGain = getPreviewGain(outputVolume, previewVolume);
 
   // 우측 설정과 중앙 슬라이더를 곱한 배율만 미리보기 영상에 적용한다.
@@ -57,6 +60,37 @@ export function PlaybackControls({ videoRef, outputVolume, onError }: PlaybackCo
       for (const event of events) video.removeEventListener(event, syncControls);
     };
   }, [videoRef]);
+
+  // Esc 등 브라우저에서 시작한 전환에도 버튼이 실제 전체 화면 상태를 따르게 한다.
+  useEffect(() => {
+    const player = playerRef.current;
+    if (!player) return;
+
+    function syncFullscreen() {
+      setFullscreen({
+        available: document.fullscreenEnabled && typeof player?.requestFullscreen === "function",
+        active: document.fullscreenElement === player,
+      });
+    }
+
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    syncFullscreen();
+    return () => document.removeEventListener("fullscreenchange", syncFullscreen);
+  }, [playerRef]);
+
+  // ASCII 화면과 재생 컨트롤을 포함한 플레이어 전체를 전환한다.
+  async function toggleFullscreen() {
+    const player = playerRef.current;
+    if (!player || !fullscreen.available) return;
+
+    setFullscreenError("");
+    try {
+      if (document.fullscreenElement === player) await document.exitFullscreen();
+      else await player.requestFullscreen();
+    } catch {
+      setFullscreenError("Could not switch fullscreen mode.");
+    }
+  }
 
   // 재생과 일시정지는 원본 영상에 적용되어 화면과 오디오가 함께 움직인다.
   async function togglePlayback() {
@@ -113,10 +147,11 @@ export function PlaybackControls({ videoRef, outputVolume, onError }: PlaybackCo
         <Button
           variant="secondary"
           className={styles.iconButton}
-          aria-label="Enter fullscreen"
-          disabled
+          aria-label={fullscreen.active ? "Exit fullscreen" : "Enter fullscreen"}
+          disabled={!fullscreen.available}
+          onClick={toggleFullscreen}
         >
-          <LuMaximize aria-hidden="true" />
+          {fullscreen.active ? <LuMinimize aria-hidden="true" /> : <LuMaximize aria-hidden="true" />}
         </Button>
       </div>
       <label className={styles.volume}>
@@ -132,6 +167,7 @@ export function PlaybackControls({ videoRef, outputVolume, onError }: PlaybackCo
         />
         <span className={styles.volumeValue} aria-hidden="true">{previewVolume} / {MAX_PREVIEW_VOLUME}</span>
       </label>
+      <p className={styles.fullscreenError} role="alert">{fullscreenError}</p>
     </div>
   );
 }
