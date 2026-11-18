@@ -62,27 +62,9 @@
   padding-block-start: clamp(2rem, 6vh, 4rem);
 }
 
-.preview video {
-  display: block;
-  width: 100%;
-  max-height: min(60dvh, 36rem);
-  border-radius: var(--radius-control);
-  background: #000;
-}
-
-.frameComparison {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+.player {
   width: 100%;
   margin-block-end: 1rem;
-  text-align: start;
-}
-
-.frameComparison figcaption {
-  margin-block-end: 0.5rem;
-  color: var(--color-muted);
-  font-size: 0.875rem;
 }
 
 .asciiSurface {
@@ -127,12 +109,6 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.75rem;
-}
-
-@media (max-width: 63.99rem) {
-  .frameComparison {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 .selectionFeedback p:not(:empty) {

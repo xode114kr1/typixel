@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import { LuLockKeyhole, LuUpload } from "react-icons/lu";
+import { PlaybackControls } from "@/components/player/playback-controls";
 import { Button } from "@/components/ui/button";
 import { startAsciiPlayback } from "@/lib/ascii-playback";
 import styles from "./home.module.css";
@@ -114,7 +115,7 @@ export default function Home() {
       className={`${styles.upload} ${selectedFile ? styles.preview : ""}`}
       aria-labelledby="upload-title"
     >
-      <h1 id="upload-title">{selectedFile ? "Video preview" : "Turn videos into text."}</h1>
+      <h1 id="upload-title">{selectedFile ? "ASCII preview" : "Turn videos into text."}</h1>
       {!selectedFile && <p className={styles.description}>Create and share your own ASCII videos.</p>}
 
       <input
@@ -133,30 +134,24 @@ export default function Home() {
         onDrop={handleDrop}
       >
         {selectedFile ? (
-          <div className={styles.frameComparison}>
-            <figure>
-              <figcaption>Original video</figcaption>
-              <video
-                ref={videoElement}
-                controls
-                playsInline
-                preload="auto"
-                aria-label={`Preview of ${selectedFile.name}`}
-                onError={() => setPlaybackError("This video could not be played. Try another file.")}
-              />
-            </figure>
-            <figure>
-              <figcaption>ASCII preview</figcaption>
-              <div className={styles.asciiSurface}>
-                <div className={styles.asciiText}>
-                  <span className={styles.characterSample} ref={characterSample} aria-hidden="true">
-                    M
-                  </span>
-                  <pre ref={asciiOutput} aria-hidden="true" />
-                  <span className={styles.asciiPlaceholder}>Waiting for a video frame</span>
-                </div>
+          <div className={styles.player}>
+            <video
+              ref={videoElement}
+              hidden
+              playsInline
+              preload="auto"
+              onError={() => setPlaybackError("This video could not be played. Try another file.")}
+            />
+            <div className={styles.asciiSurface}>
+              <div className={styles.asciiText}>
+                <span className={styles.characterSample} ref={characterSample} aria-hidden="true">
+                  M
+                </span>
+                <pre ref={asciiOutput} aria-hidden="true" />
+                <span className={styles.asciiPlaceholder}>Waiting for a video frame</span>
               </div>
-            </figure>
+            </div>
+            <PlaybackControls videoRef={videoElement} onError={setPlaybackError} />
           </div>
         ) : (
           <>

@@ -1,0 +1,52 @@
+.controls {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 2vw, 1rem);
+  margin-block-start: 0.75rem;
+}
+
+.controls .playButton {
+  flex: none;
+  width: 2.75rem;
+  padding: 0;
+}
+
+.timeline {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--color-copy);
+}
+
+.timeline:focus-visible,
+.volumeSlider:focus-visible {
+  outline: 2px solid var(--color-copy);
+  outline-offset: 3px;
+}
+
+.volume {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  margin-block-start: 0.25rem;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
+.volumeSlider {
+  width: min(7rem, 32%);
+  accent-color: var(--color-copy);
+}
+
+.volumeValue {
+  min-width: 3ch;
+  font-variant-numeric: tabular-nums;
+}
+
+.time {
+  flex: none;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
