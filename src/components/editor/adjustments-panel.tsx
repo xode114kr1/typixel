@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import type { AsciiAppearance, AsciiCharacterSet, AsciiTone } from "@/lib/ascii";
 import { MAX_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
 import { MAX_OUTPUT_VOLUME } from "@/lib/video-volume";
@@ -112,6 +113,7 @@ export function AdjustmentsPanel({
       <p id="output-volume-description" className={styles.note}>
         This level is used for saved videos. The player volume applies only to playback.
       </p>
+      <Button className={styles.exportButton} disabled>Export</Button>
     </aside>
   );
 }
