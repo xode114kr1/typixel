@@ -3,10 +3,12 @@
 import { useEffect, useState, type RefObject } from "react";
 import { LuPause, LuPlay, LuVolume2, LuVolumeX } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
+import { getPreviewGain, MAX_PREVIEW_VOLUME } from "@/lib/video-volume";
 import styles from "./playback-controls.module.css";
 
 type PlaybackControlsProps = {
   videoRef: RefObject<HTMLVideoElement | null>;
+  outputVolume: number;
   onError: (message: string) => void;
 };
 
@@ -16,9 +18,19 @@ function formatTime(seconds: number) {
   return `${Math.floor(wholeSeconds / 60)}:${String(wholeSeconds % 60).padStart(2, "0")}`;
 }
 
-export function PlaybackControls({ videoRef, onError }: PlaybackControlsProps) {
+export function PlaybackControls({ videoRef, outputVolume, onError }: PlaybackControlsProps) {
   const [playback, setPlayback] = useState({ ready: false, paused: true, time: 0, duration: 0 });
-  const [previewVolume, setPreviewVolume] = useState(100);
+  const [previewVolume, setPreviewVolume] = useState(MAX_PREVIEW_VOLUME);
+  const previewGain = getPreviewGain(outputVolume, previewVolume);
+
+  // 우측 설정과 중앙 슬라이더를 곱한 배율만 미리보기 영상에 적용한다.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.volume = previewGain;
+    video.muted = previewGain === 0;
+  }, [previewGain, videoRef]);
 
   // 영상 이벤트를 기준으로 컨트롤을 동기화하고, ASCII 프레임 반복과는 별도로 갱신한다.
   useEffect(() => {
@@ -71,16 +83,6 @@ export function PlaybackControls({ videoRef, onError }: PlaybackControlsProps) {
     if (video) video.currentTime = time;
   }
 
-  // 미리보기 재생 요소의 소리만 바꾼다. 출력용 볼륨은 별도 설정으로 관리한다.
-  function changePreviewVolume(percent: number) {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.volume = percent / 100;
-    video.muted = percent === 0;
-    setPreviewVolume(video.muted ? 0 : Math.round(video.volume * 100));
-  }
-
   return (
     <div aria-label="Playback controls" role="group">
       <div className={styles.controls}>
@@ -110,18 +112,17 @@ export function PlaybackControls({ videoRef, onError }: PlaybackControlsProps) {
         </span>
       </div>
       <label className={styles.volume}>
-        {previewVolume === 0 ? <LuVolumeX aria-hidden="true" /> : <LuVolume2 aria-hidden="true" />}
+        {previewGain === 0 ? <LuVolumeX aria-hidden="true" /> : <LuVolume2 aria-hidden="true" />}
         <span>Preview volume</span>
         <input
           className={styles.volumeSlider}
           type="range"
           min={0}
-          max={100}
+          max={MAX_PREVIEW_VOLUME}
           value={previewVolume}
-          aria-valuetext={`${previewVolume}%`}
-          onChange={(event) => changePreviewVolume(event.currentTarget.valueAsNumber)}
+          onChange={(event) => setPreviewVolume(event.currentTarget.valueAsNumber)}
         />
-        <span className={styles.volumeValue} aria-hidden="true">{previewVolume}%</span>
+        <span className={styles.volumeValue} aria-hidden="true">{previewVolume} / {MAX_PREVIEW_VOLUME}</span>
       </label>
     </div>
   );

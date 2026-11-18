@@ -26,6 +26,12 @@
   font-variant-numeric: tabular-nums;
 }
 
+.note {
+  margin-block-start: 0.5rem;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
 .control input,
 .control select {
   grid-column: 1 / -1;

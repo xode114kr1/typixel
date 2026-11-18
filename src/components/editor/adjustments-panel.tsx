@@ -1,13 +1,16 @@
 import type { AsciiAppearance, AsciiCharacterSet, AsciiTone } from "@/lib/ascii";
+import { MAX_OUTPUT_VOLUME } from "@/lib/video-volume";
 import styles from "./adjustments-panel.module.css";
 
 type AdjustmentsPanelProps = {
   columns: number;
   tone: AsciiTone;
   appearance: AsciiAppearance;
+  outputVolume: number;
   onColumnsChange: (columns: number) => void;
   onToneChange: (tone: AsciiTone) => void;
   onAppearanceChange: (appearance: AsciiAppearance) => void;
+  onOutputVolumeChange: (volume: number) => void;
 };
 
 const toneControls = [
@@ -21,9 +24,11 @@ export function AdjustmentsPanel({
   columns,
   tone,
   appearance,
+  outputVolume,
   onColumnsChange,
   onToneChange,
   onAppearanceChange,
+  onOutputVolumeChange,
 }: AdjustmentsPanelProps) {
   return (
     <aside className={styles.panel} aria-labelledby="adjustments-title">
@@ -90,6 +95,22 @@ export function AdjustmentsPanel({
           onChange={(event) => onAppearanceChange({ ...appearance, backgroundColor: event.currentTarget.value })}
         />
       </label>
+      <label className={styles.control}>
+        Output volume
+        <span aria-hidden="true">{outputVolume}%</span>
+        <input
+          type="range"
+          min={0}
+          max={MAX_OUTPUT_VOLUME}
+          value={outputVolume}
+          aria-valuetext={`${outputVolume}%`}
+          aria-describedby="output-volume-description"
+          onChange={(event) => onOutputVolumeChange(event.currentTarget.valueAsNumber)}
+        />
+      </label>
+      <p id="output-volume-description" className={styles.note}>
+        This level is used for saved videos. The player volume applies only to playback.
+      </p>
     </aside>
   );
 }

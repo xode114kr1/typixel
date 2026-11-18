@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { startAsciiPlayback } from "@/lib/ascii-playback";
 import { DEFAULT_ASCII_APPEARANCE, DEFAULT_ASCII_TONE } from "@/lib/ascii";
 import { DEFAULT_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
+import { MAX_OUTPUT_VOLUME } from "@/lib/video-volume";
 import styles from "./home.module.css";
 
 export default function Home() {
@@ -25,6 +26,7 @@ export default function Home() {
   const [columns, setColumns] = useState(DEFAULT_ASCII_COLUMNS);
   const [tone, setTone] = useState(DEFAULT_ASCII_TONE);
   const [appearance, setAppearance] = useState(DEFAULT_ASCII_APPEARANCE);
+  const [outputVolume, setOutputVolume] = useState(MAX_OUTPUT_VOLUME);
 
   // 선택한 파일을 브라우저에서 직접 재생하고, 영상이 바뀌거나 페이지를 떠나면 URL을 해제한다.
   useEffect(() => {
@@ -178,7 +180,11 @@ export default function Home() {
                 <span className={styles.asciiPlaceholder}>Waiting for a video frame</span>
               </div>
             </div>
-            <PlaybackControls videoRef={videoElement} onError={setPlaybackError} />
+            <PlaybackControls
+              videoRef={videoElement}
+              outputVolume={outputVolume}
+              onError={setPlaybackError}
+            />
           </div>
         ) : (
           <>
@@ -206,9 +212,11 @@ export default function Home() {
           columns={columns}
           tone={tone}
           appearance={appearance}
+          outputVolume={outputVolume}
           onColumnsChange={setColumns}
           onToneChange={setTone}
           onAppearanceChange={setAppearance}
+          onOutputVolumeChange={setOutputVolume}
         />
       )}
 
