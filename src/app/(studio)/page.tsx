@@ -3,30 +3,34 @@
 import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import { LuLockKeyhole, LuUpload } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
-import { captureAsciiFrame } from "@/lib/capture-ascii-frame";
+import { startAsciiPlayback } from "@/lib/ascii-playback";
 import styles from "./home.module.css";
 
 export default function Home() {
   const fileInput = useRef<HTMLInputElement>(null);
   const videoElement = useRef<HTMLVideoElement>(null);
   const characterSample = useRef<HTMLSpanElement>(null);
+  const asciiOutput = useRef<HTMLPreElement>(null);
   const dragDepth = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [playbackError, setPlaybackError] = useState("");
-  const [asciiFrame, setAsciiFrame] = useState("");
   const [captureError, setCaptureError] = useState("");
 
   // 선택한 파일을 브라우저에서 직접 재생하고, 영상이 바뀌거나 페이지를 떠나면 URL을 해제한다.
   useEffect(() => {
     const video = videoElement.current;
-    if (!selectedFile || !video) return;
+    const output = asciiOutput.current;
+    const sample = characterSample.current;
+    if (!selectedFile || !video || !output || !sample) return;
 
+    const stopAsciiPlayback = startAsciiPlayback(video, output, sample, setCaptureError);
     const url = URL.createObjectURL(selectedFile);
     video.src = url;
 
     return () => {
+      stopAsciiPlayback();
       video.pause();
       video.removeAttribute("src");
       video.load();
@@ -62,23 +66,7 @@ export default function Home() {
     setSelectedFile(file);
     setError("");
     setPlaybackError("");
-    setAsciiFrame("");
     setCaptureError("");
-  }
-
-  // 현재 디코딩된 프레임을 캡처하고, 출력에 쓰는 문자의 실제 크기로 비율을 계산한다.
-  function captureCurrentFrame() {
-    const video = videoElement.current;
-    const character = characterSample.current?.getBoundingClientRect();
-    if (!video || video.seeking || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
-    if (!video.videoWidth || !character?.width || !character.height) return;
-
-    try {
-      setAsciiFrame(captureAsciiFrame(video, character.width / character.height));
-      setCaptureError("");
-    } catch {
-      setCaptureError("This frame could not be converted to ASCII.");
-    }
   }
 
   // 자식 요소를 지날 때도 dragenter가 발생하므로 진입 횟수를 기록한다.
@@ -154,20 +142,18 @@ export default function Home() {
                 playsInline
                 preload="auto"
                 aria-label={`Preview of ${selectedFile.name}`}
-                onLoadedData={captureCurrentFrame}
                 onError={() => setPlaybackError("This video could not be played. Try another file.")}
               />
             </figure>
             <figure>
-              <figcaption>ASCII frame</figcaption>
+              <figcaption>ASCII preview</figcaption>
               <div className={styles.asciiSurface}>
                 <div className={styles.asciiText}>
                   <span className={styles.characterSample} ref={characterSample} aria-hidden="true">
                     M
                   </span>
-                  {asciiFrame ? <pre aria-label="Captured ASCII frame">{asciiFrame}</pre> : (
-                    <span className={styles.asciiPlaceholder}>Waiting for a video frame</span>
-                  )}
+                  <pre ref={asciiOutput} aria-hidden="true" />
+                  <span className={styles.asciiPlaceholder}>Waiting for a video frame</span>
                 </div>
               </div>
             </figure>
@@ -187,11 +173,6 @@ export default function Home() {
           </>
         )}
         <div className={styles.previewActions}>
-          {selectedFile && (
-            <Button variant="secondary" disabled={!asciiFrame && !captureError} onClick={captureCurrentFrame}>
-              Capture frame
-            </Button>
-          )}
           <Button className={styles.chooseButton} onClick={openFilePicker}>
             {selectedFile ? "Change video" : "Choose file"}
           </Button>

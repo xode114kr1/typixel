@@ -7,17 +7,16 @@ const MAX_ROWS = 160;
 export function captureAsciiFrame(
   video: HTMLVideoElement,
   characterAspectRatio: number,
+  context: CanvasRenderingContext2D,
 ): string {
   // 문자의 폭과 줄 높이가 다르므로 실제 표시 비율에 맞춰 행 수를 보정한다.
   const rowsPerColumn = (video.videoHeight / video.videoWidth) * characterAspectRatio;
   const columns = Math.max(1, Math.min(MAX_COLUMNS, Math.floor(MAX_ROWS / rowsPerColumn)));
   const rows = Math.max(1, Math.min(MAX_ROWS, Math.round(columns * rowsPerColumn)));
 
-  const canvas = document.createElement("canvas");
-  canvas.width = columns;
-  canvas.height = rows;
-  const context = canvas.getContext("2d");
-  if (!context) throw new Error("Canvas 2D context is unavailable.");
+  const { canvas } = context;
+  if (canvas.width !== columns) canvas.width = columns;
+  if (canvas.height !== rows) canvas.height = rows;
 
   context.drawImage(video, 0, 0, columns, rows);
   const { data } = context.getImageData(0, 0, columns, rows);

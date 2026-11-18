@@ -118,6 +118,10 @@
   font: 0.875rem var(--font-sans);
 }
 
+.asciiText pre:not(:empty) + .asciiPlaceholder {
+  display: none;
+}
+
 .previewActions {
   display: flex;
   flex-wrap: wrap;
