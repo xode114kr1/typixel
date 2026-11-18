@@ -1,16 +1,34 @@
 "use client";
 
-import { useRef, useState, type ChangeEvent, type DragEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import { LuLockKeyhole, LuUpload } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import styles from "./home.module.css";
 
 export default function Home() {
   const fileInput = useRef<HTMLInputElement>(null);
+  const videoElement = useRef<HTMLVideoElement>(null);
   const dragDepth = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState("");
+  const [playbackError, setPlaybackError] = useState("");
+
+  // 선택한 파일을 브라우저에서 직접 재생하고, 영상이 바뀌거나 페이지를 떠나면 URL을 해제한다.
+  useEffect(() => {
+    const video = videoElement.current;
+    if (!selectedFile || !video) return;
+
+    const url = URL.createObjectURL(selectedFile);
+    video.src = url;
+
+    return () => {
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      URL.revokeObjectURL(url);
+    };
+  }, [selectedFile]);
 
   // 공통 버튼을 눌렀을 때 브라우저의 기본 파일 선택창을 연다.
   function openFilePicker() {
@@ -39,6 +57,7 @@ export default function Home() {
 
     setSelectedFile(file);
     setError("");
+    setPlaybackError("");
   }
 
   // 자식 요소를 지날 때도 dragenter가 발생하므로 진입 횟수를 기록한다.
@@ -82,9 +101,20 @@ export default function Home() {
   }
 
   return (
-    <section className={styles.upload} aria-labelledby="upload-title">
-      <h1 id="upload-title">Turn videos into text.</h1>
-      <p className={styles.description}>Create and share your own ASCII videos.</p>
+    <section
+      className={`${styles.upload} ${selectedFile ? styles.preview : ""}`}
+      aria-labelledby="upload-title"
+    >
+      <h1 id="upload-title">{selectedFile ? "Video preview" : "Turn videos into text."}</h1>
+      {!selectedFile && <p className={styles.description}>Create and share your own ASCII videos.</p>}
+
+      <input
+        ref={fileInput}
+        type="file"
+        accept="video/*,.mp4,.webm,.mov"
+        hidden
+        onChange={handleFileChange}
+      />
 
       <div
         className={isDragging ? `${styles.dropZone} ${styles.dropZoneActive}` : styles.dropZone}
@@ -93,31 +123,38 @@ export default function Home() {
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
-        <Button
-          variant="secondary"
-          className={styles.uploadIcon}
-          aria-label="Choose a video file"
-          onClick={openFilePicker}
-        >
-          <LuUpload aria-hidden="true" />
-        </Button>
-        <h2>Drag and drop a video</h2>
-        <p>Video formats such as MP4, WebM, and MOV</p>
-        <input
-          ref={fileInput}
-          type="file"
-          accept="video/*,.mp4,.webm,.mov"
-          hidden
-          onChange={handleFileChange}
-        />
+        {selectedFile ? (
+          <video
+            ref={videoElement}
+            controls
+            playsInline
+            preload="metadata"
+            aria-label={`Preview of ${selectedFile.name}`}
+            onError={() => setPlaybackError("This video could not be played. Try another file.")}
+          />
+        ) : (
+          <>
+            <Button
+              variant="secondary"
+              className={styles.uploadIcon}
+              aria-label="Choose a video file"
+              onClick={openFilePicker}
+            >
+              <LuUpload aria-hidden="true" />
+            </Button>
+            <h2>Drag and drop a video</h2>
+            <p>Video formats such as MP4, WebM, and MOV</p>
+          </>
+        )}
         <Button className={styles.chooseButton} onClick={openFilePicker}>
-          Choose file
+          {selectedFile ? "Change video" : "Choose file"}
         </Button>
       </div>
 
       <div className={styles.selectionFeedback}>
         <p role="status">{selectedFile && <>Selected video: <strong>{selectedFile.name}</strong></>}</p>
         <p role="alert">{error}</p>
+        <p role="alert">{playbackError}</p>
       </div>
 
       <p className={styles.rightsNote}>

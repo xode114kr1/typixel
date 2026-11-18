@@ -57,6 +57,20 @@
   border-radius: 999px;
 }
 
+.preview {
+  width: min(100%, 62rem);
+  padding-block-start: clamp(2rem, 6vh, 4rem);
+}
+
+.preview video {
+  display: block;
+  width: 100%;
+  max-height: min(60dvh, 36rem);
+  margin-block-end: 1rem;
+  border-radius: var(--radius-control);
+  background: #000;
+}
+
 .selectionFeedback p:not(:empty) {
   margin-block-start: 0.75rem;
   overflow-wrap: anywhere;
