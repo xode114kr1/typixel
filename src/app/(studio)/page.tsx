@@ -6,6 +6,7 @@ import { AdjustmentsPanel } from "@/components/editor/adjustments-panel";
 import { PlaybackControls } from "@/components/player/playback-controls";
 import { Button } from "@/components/ui/button";
 import { startAsciiPlayback } from "@/lib/ascii-playback";
+import { DEFAULT_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
 import styles from "./home.module.css";
 
 export default function Home() {
@@ -13,12 +14,14 @@ export default function Home() {
   const videoElement = useRef<HTMLVideoElement>(null);
   const characterSample = useRef<HTMLSpanElement>(null);
   const asciiOutput = useRef<HTMLPreElement>(null);
+  const asciiPlayback = useRef<ReturnType<typeof startAsciiPlayback>>(null);
   const dragDepth = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [playbackError, setPlaybackError] = useState("");
   const [captureError, setCaptureError] = useState("");
+  const [columns, setColumns] = useState(DEFAULT_ASCII_COLUMNS);
 
   // 선택한 파일을 브라우저에서 직접 재생하고, 영상이 바뀌거나 페이지를 떠나면 URL을 해제한다.
   useEffect(() => {
@@ -27,18 +30,25 @@ export default function Home() {
     const sample = characterSample.current;
     if (!selectedFile || !video || !output || !sample) return;
 
-    const stopAsciiPlayback = startAsciiPlayback(video, output, sample, setCaptureError);
+    const playback = startAsciiPlayback(video, output, sample, setCaptureError);
+    asciiPlayback.current = playback;
     const url = URL.createObjectURL(selectedFile);
     video.src = url;
 
     return () => {
-      stopAsciiPlayback();
+      playback?.stop();
+      asciiPlayback.current = null;
       video.pause();
       video.removeAttribute("src");
       video.load();
       URL.revokeObjectURL(url);
     };
   }, [selectedFile]);
+
+  // 해상도 변경과 영상 교체 시 현재 슬라이더 값을 변환기에 전달한다.
+  useEffect(() => {
+    asciiPlayback.current?.updateColumns(columns);
+  }, [columns, selectedFile]);
 
   // 공통 버튼을 눌렀을 때 브라우저의 기본 파일 선택창을 연다.
   function openFilePicker() {
@@ -149,7 +159,10 @@ export default function Home() {
               onError={() => setPlaybackError("This video could not be played. Try another file.")}
             />
             <div className={styles.asciiSurface}>
-              <div className={styles.asciiText}>
+              <div
+                className={styles.asciiText}
+                style={{ fontSize: `calc(2.4cqi * ${DEFAULT_ASCII_COLUMNS} / ${columns})` }}
+              >
                 <span className={styles.characterSample} ref={characterSample} aria-hidden="true">
                   M
                 </span>
@@ -180,7 +193,7 @@ export default function Home() {
         </div>
       </div>
 
-      {selectedFile && <AdjustmentsPanel />}
+      {selectedFile && <AdjustmentsPanel columns={columns} onColumnsChange={setColumns} />}
 
       <div className={styles.selectionFeedback}>
         <p role="status">{selectedFile && <>Selected video: <strong>{selectedFile.name}</strong></>}</p>

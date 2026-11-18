@@ -1,4 +1,4 @@
-import { captureAsciiFrame } from "./capture-ascii-frame";
+import { captureAsciiFrame, DEFAULT_ASCII_COLUMNS } from "./capture-ascii-frame";
 
 /** 영상의 재생 상태에 맞춰 ASCII 출력을 갱신하고 정리 함수를 반환한다. */
 export function startAsciiPlayback(
@@ -6,11 +6,11 @@ export function startAsciiPlayback(
   output: HTMLPreElement,
   characterSample: HTMLElement,
   onError: (message: string) => void,
-): () => void {
+) {
   const context = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
   if (!context) {
     onError("Canvas 2D is unavailable in this browser.");
-    return () => {};
+    return null;
   }
 
   const usesVideoFrames = typeof video.requestVideoFrameCallback === "function";
@@ -18,6 +18,7 @@ export function startAsciiPlayback(
   let lastTime = -1;
   let characterAspectRatio = 0;
   let captureFailed = false;
+  let columns = DEFAULT_ASCII_COLUMNS;
 
   // React를 다시 렌더링하지 않고 미리보기의 텍스트만 갱신한다.
   const renderFrame = () => {
@@ -25,7 +26,7 @@ export function startAsciiPlayback(
     if (!video.videoWidth || !characterAspectRatio) return;
 
     try {
-      const frame = captureAsciiFrame(video, characterAspectRatio, context);
+      const frame = captureAsciiFrame(video, characterAspectRatio, context, columns);
       if (output.textContent !== frame) output.textContent = frame;
       lastTime = video.currentTime;
       if (captureFailed) onError("");
@@ -90,7 +91,15 @@ export function startAsciiPlayback(
   video.addEventListener("pause", finishPlayback);
   video.addEventListener("ended", finishPlayback);
 
-  return () => {
+  // 해상도가 바뀌면 재생 위치를 유지한 채 현재 프레임을 다시 그린다.
+  function updateColumns(nextColumns: number) {
+    if (columns === nextColumns) return;
+    columns = nextColumns;
+    measureCharacter();
+  }
+
+  // 영상이 바뀌면 이전 영상의 프레임 예약과 이벤트 연결을 정리한다.
+  function stop() {
     cancelFrame();
     resizeObserver.disconnect();
     video.removeEventListener("loadeddata", refreshFrame);
@@ -100,5 +109,7 @@ export function startAsciiPlayback(
     video.removeEventListener("pause", finishPlayback);
     video.removeEventListener("ended", finishPlayback);
     output.textContent = "";
-  };
+  }
+
+  return { updateColumns, stop };
 }

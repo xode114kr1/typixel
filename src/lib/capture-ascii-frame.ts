@@ -1,6 +1,6 @@
 import { rgbToAscii } from "./ascii";
 
-const MAX_COLUMNS = 64;
+export const DEFAULT_ASCII_COLUMNS = 64;
 const MAX_ROWS = 160;
 
 /** 현재 영상 프레임을 축소해 픽셀 하나를 문자 하나로 변환한다. */
@@ -8,10 +8,11 @@ export function captureAsciiFrame(
   video: HTMLVideoElement,
   characterAspectRatio: number,
   context: CanvasRenderingContext2D,
+  targetColumns: number,
 ): string {
   // 문자의 폭과 줄 높이가 다르므로 실제 표시 비율에 맞춰 행 수를 보정한다.
   const rowsPerColumn = (video.videoHeight / video.videoWidth) * characterAspectRatio;
-  const columns = Math.max(1, Math.min(MAX_COLUMNS, Math.floor(MAX_ROWS / rowsPerColumn)));
+  const columns = Math.max(1, Math.min(targetColumns, Math.floor(MAX_ROWS / rowsPerColumn)));
   const rows = Math.max(1, Math.min(MAX_ROWS, Math.round(columns * rowsPerColumn)));
 
   const { canvas } = context;

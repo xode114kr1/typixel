@@ -10,3 +10,29 @@
   font-size: 1rem;
   font-weight: 600;
 }
+
+.control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+  margin-block-start: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.control span {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.control input {
+  grid-column: 1 / -1;
+  width: 100%;
+  accent-color: var(--color-copy);
+}
+
+.control input:focus-visible {
+  outline: 2px solid var(--color-copy);
+  outline-offset: 3px;
+}
