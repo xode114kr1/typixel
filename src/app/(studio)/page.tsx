@@ -6,7 +6,11 @@ import { AdjustmentsPanel } from "@/components/editor/adjustments-panel";
 import { PlaybackControls } from "@/components/player/playback-controls";
 import { Button } from "@/components/ui/button";
 import { startAsciiPlayback } from "@/lib/ascii-playback";
-import { DEFAULT_ASCII_BRIGHTNESS, DEFAULT_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
+import {
+  DEFAULT_ASCII_BRIGHTNESS,
+  DEFAULT_ASCII_COLUMNS,
+  DEFAULT_ASCII_CONTRAST,
+} from "@/lib/capture-ascii-frame";
 import styles from "./home.module.css";
 
 export default function Home() {
@@ -23,6 +27,7 @@ export default function Home() {
   const [captureError, setCaptureError] = useState("");
   const [columns, setColumns] = useState(DEFAULT_ASCII_COLUMNS);
   const [brightness, setBrightness] = useState(DEFAULT_ASCII_BRIGHTNESS);
+  const [contrast, setContrast] = useState(DEFAULT_ASCII_CONTRAST);
 
   // 선택한 파일을 브라우저에서 직접 재생하고, 영상이 바뀌거나 페이지를 떠나면 URL을 해제한다.
   useEffect(() => {
@@ -50,7 +55,8 @@ export default function Home() {
   useEffect(() => {
     asciiPlayback.current?.updateColumns(columns);
     asciiPlayback.current?.updateBrightness(brightness);
-  }, [brightness, columns, selectedFile]);
+    asciiPlayback.current?.updateContrast(contrast);
+  }, [brightness, columns, contrast, selectedFile]);
 
   // 공통 버튼을 눌렀을 때 브라우저의 기본 파일 선택창을 연다.
   function openFilePicker() {
@@ -199,8 +205,10 @@ export default function Home() {
         <AdjustmentsPanel
           columns={columns}
           brightness={brightness}
+          contrast={contrast}
           onColumnsChange={setColumns}
           onBrightnessChange={setBrightness}
+          onContrastChange={setContrast}
         />
       )}
 
