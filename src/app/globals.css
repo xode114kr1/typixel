@@ -3,9 +3,11 @@
 @theme static {
   --color-canvas: #212121;
   --color-sidebar: #171717;
+  --color-surface: #2f2f2f;
   --color-line: #3a3a3a;
   --color-copy: #ececec;
   --color-muted: #a8a8a8;
+  --radius-control: 0.625rem;
   --font-sans: Inter, system-ui, sans-serif;
 }
 
@@ -17,4 +19,9 @@ body {
   background: var(--color-canvas);
   color: var(--color-copy);
   font-family: var(--font-sans);
+}
+
+:where(a, button):focus-visible {
+  outline: 2px solid var(--color-copy);
+  outline-offset: 3px;
 }
