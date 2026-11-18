@@ -113,10 +113,15 @@ export default function Home() {
   return (
     <section
       className={`${styles.upload} ${selectedFile ? styles.preview : ""}`}
-      aria-labelledby="upload-title"
+      aria-labelledby={selectedFile ? undefined : "upload-title"}
+      aria-label={selectedFile ? "Video player" : undefined}
     >
-      <h1 id="upload-title">{selectedFile ? "ASCII preview" : "Turn videos into text."}</h1>
-      {!selectedFile && <p className={styles.description}>Create and share your own ASCII videos.</p>}
+      {!selectedFile && (
+        <>
+          <h1 id="upload-title">Turn videos into text.</h1>
+          <p className={styles.description}>Create and share your own ASCII videos.</p>
+        </>
+      )}
 
       <input
         ref={fileInput}
