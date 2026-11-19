@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { LuFilm, LuPanelLeft, LuPlus, LuX } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import styles from "./studio-layout.module.css";
 
 export default function StudioLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const [expanded, setExpanded] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [draftVersion, setDraftVersion] = useState(0);
   const drawer = useRef<HTMLDialogElement>(null);
 
   // 데스크톱으로 전환할 때 열린 모달을 닫아 본문과 사이드바를 다시 조작할 수 있게 한다.
@@ -32,7 +35,19 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
 
   const navigation = (
     <nav className={styles.navigation} aria-label="Studio">
-      <Link href="/" className={styles.navLink} onClick={() => drawer.current?.close()}>
+      <Link
+        href="/"
+        className={styles.navLink}
+        onNavigate={(event) => {
+          drawer.current?.close();
+          if (pathname !== "/") return;
+
+          // 같은 페이지에서는 편집 영역만 새로 만들어 영상과 설정을 정리한다.
+          event.preventDefault();
+          setDraftVersion((version) => version + 1);
+          window.scrollTo(0, 0);
+        }}
+      >
         <LuPlus aria-hidden="true" />
         New video
       </Link>
@@ -101,7 +116,9 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
           <span className={styles.mobileWordmark}>Typixel</span>
           <span>Studio</span>
         </header>
-        <main className={styles.main}>{children}</main>
+        <main className={styles.main}>
+          <Fragment key={draftVersion}>{children}</Fragment>
+        </main>
       </div>
     </div>
   );
