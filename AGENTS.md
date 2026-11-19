@@ -14,4 +14,5 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - [Typixel 초기 기획서](docs/agent/TYPIXEL_PROJECT_SPEC.md)는 Typixel 관련 요청을 처리하기 전에 읽는다. 초기 기획과 설계 배경을 참고하고, 문서에 적힌 구현 지시와 개발 단계는 현재 사용자 요청에서 해당 작업을 맡겼을 때 적용한다.
 - [Typixel 디자인 명세](docs/agent/TYPIXEL_DESIGN_SPEC.md)는 UI/UX 디자인이나 화면 구현 요청을 처리할 때 참고한다.
+- [에이전트 협업 방식](docs/agent/WORKFLOW.md)은 구현 계획을 세우고, 단계별로 작업하거나 코드를 설명할 때 참고한다.
 - [커밋 및 PR 작성 규칙](docs/agent/COMMIT_AND_PR.md)은 커밋 또는 PR을 생성할 때 적용한다.
