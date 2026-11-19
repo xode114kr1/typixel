@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "predb:check": "npm run db:generate",
+    "db:check": "tsx --env-file-if-exists=.env scripts/check-db.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.1",
@@ -28,6 +30,7 @@
     "eslint-config-next": "16.4.6",
     "prisma": "^7.10.1",
     "tailwindcss": "4.3.3",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }
