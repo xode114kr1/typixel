@@ -1,0 +1,94 @@
+.panel {
+  padding: 1.25rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  background: var(--color-sidebar);
+  text-align: start;
+}
+
+.panel h2 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.header .resetButton {
+  flex: none;
+  width: 2.75rem;
+  padding-inline: 0;
+}
+
+.control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+  margin-block-start: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.control span {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.note {
+  margin-block-start: 0.5rem;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
+.exportButton {
+  width: 100%;
+  margin-block-start: 1.25rem;
+}
+
+.control input,
+.control select {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.control input {
+  accent-color: var(--color-copy);
+}
+
+.control select,
+.colorControl input {
+  min-height: 2.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+}
+
+.control select {
+  padding-inline: 0.5rem;
+}
+
+.colorControl {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-block-start: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.colorControl input {
+  flex: none;
+  width: 2.75rem;
+  padding: 0.25rem;
+}
+
+.control :is(input, select):focus-visible,
+.colorControl input:focus-visible {
+  outline: 2px solid var(--color-copy);
+  outline-offset: 3px;
+}

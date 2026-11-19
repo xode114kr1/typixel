@@ -1,0 +1,64 @@
+.upload {
+  width: min(100%, 38rem);
+  margin-inline: auto;
+  padding-block: clamp(3rem, 16vh, 10rem) 3rem;
+  text-align: center;
+}
+
+.upload h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 650;
+  line-height: 1.12;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.description {
+  margin-block-start: 0.75rem;
+  color: var(--color-muted);
+}
+
+.preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+  width: min(100%, 76rem);
+  padding-block-start: clamp(2rem, 6vh, 4rem);
+}
+
+.preview .rightsNote {
+  margin-block-start: 0;
+}
+
+@media (min-width: 68rem) {
+  .preview {
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 18rem);
+  }
+
+  .preview .selectionFeedback,
+  .preview .rightsNote {
+    grid-column: 1 / -1;
+  }
+}
+
+.selectionFeedback p:not(:empty) {
+  margin-block-start: 0.75rem;
+  overflow-wrap: anywhere;
+  font-size: 0.875rem;
+}
+
+.rightsNote {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-block-start: 1rem;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+}
+
+.rightsNote svg {
+  flex: none;
+  align-self: center;
+}

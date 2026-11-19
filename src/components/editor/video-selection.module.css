@@ -1,0 +1,48 @@
+.dropZone {
+  display: grid;
+  justify-items: center;
+  padding: clamp(1.75rem, 6vw, 2.5rem) 1rem;
+  border: 1px dashed #626262;
+  border-radius: 0.75rem;
+  background: var(--color-sidebar);
+}
+
+.empty {
+  margin-block-start: 2rem;
+}
+
+.active {
+  border-color: var(--color-muted);
+  background: var(--color-surface);
+}
+
+.dropZone .uploadIcon {
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  margin-block-end: 1rem;
+  font-size: 1.25rem;
+}
+
+.empty h2 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.formats {
+  margin-block: 0.375rem 1.25rem;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+}
+
+.dropZone .chooseButton {
+  padding-inline: 1.125rem;
+  border-radius: 999px;
+}
+
+.error:not(:empty) {
+  margin-block-start: 0.75rem;
+  overflow-wrap: anywhere;
+  color: #ffb4b4;
+  font-size: 0.875rem;
+}

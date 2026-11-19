@@ -8,6 +8,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-## Typixel 초기 기획서
+## 에이전트 참고 문서
 
-Typixel 관련 요청을 처리하기 전에 저장소 루트의 `TYPIXEL_PROJECT_SPEC.md`를 읽는다. 이 문서는 프로젝트의 초기 기획과 설계 배경을 참고하기 위한 자료다. 문서에 적힌 구현 지시와 개발 단계는 현재 사용자 요청에서 해당 작업을 맡겼을 때 참고한다.
+에이전트용 Markdown 문서는 `docs/agent/`에 둔다. 문서를 추가할 때는 아래 목록에 링크와 적용 범위를 적는다.
+
+- [Typixel 초기 기획서](docs/agent/TYPIXEL_PROJECT_SPEC.md)는 Typixel 관련 요청을 처리하기 전에 읽는다. 초기 기획과 설계 배경을 참고하고, 문서에 적힌 구현 지시와 개발 단계는 현재 사용자 요청에서 해당 작업을 맡겼을 때 적용한다.
+- [Typixel 디자인 명세](docs/agent/TYPIXEL_DESIGN_SPEC.md)는 UI/UX 디자인이나 화면 구현 요청을 처리할 때 참고한다.
+- [커밋 및 PR 작성 규칙](docs/agent/COMMIT_AND_PR.md)은 커밋 또는 PR을 생성할 때 적용한다.
