@@ -20,6 +20,18 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Local PostgreSQL
+
+Copy `.env.example` to `.env`. Use the same local development password for `POSTGRES_PASSWORD` and the password in `DATABASE_URL`. URL-encode the password in `DATABASE_URL` if it contains special characters. With Docker running, start the database:
+
+```bash
+docker compose up -d --wait postgres
+```
+
+The development database is `typixel`, with user `typixel`, on `127.0.0.1:5432`.
+
+To verify the connection from Prisma, run `npm run db:check`. It generates Prisma Client and runs `SELECT 1` against `DATABASE_URL`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
