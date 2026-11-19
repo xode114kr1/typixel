@@ -22,7 +22,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Local PostgreSQL
 
-Copy `.env.example` to `.env` and set `POSTGRES_PASSWORD` to a local development password. With Docker running, start the database:
+Copy `.env.example` to `.env`. Use the same local development password for `POSTGRES_PASSWORD` and the password in `DATABASE_URL`. URL-encode the password in `DATABASE_URL` if it contains special characters. With Docker running, start the database:
 
 ```bash
 docker compose up -d --wait postgres
