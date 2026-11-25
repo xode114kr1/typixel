@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
-import { LuCircleUserRound, LuFilm, LuPanelLeft, LuPlus, LuX } from "react-icons/lu";
+import { LuFilm, LuPanelLeft, LuPlus, LuX } from "react-icons/lu";
+import { AccountMenu } from "@/components/auth/account-menu";
 import { SignInDialog } from "@/components/auth/sign-in-dialog";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
@@ -120,10 +121,7 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
           <span>Studio</span>
           <div className={styles.account}>
             {session ? (
-              <span className={styles.profile} title={session.user.name}>
-                <LuCircleUserRound aria-hidden="true" />
-                <span className="sr-only">Signed in as {session.user.name}</span>
-              </span>
+              <AccountMenu name={session.user.name} />
             ) : (
               <SignInDialog />
             )}
