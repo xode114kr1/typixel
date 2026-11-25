@@ -1,14 +1,15 @@
 "use client";
 
-import Link from "next/link";
+import type { LinkProps } from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
-import { LuFilm, LuPanelLeft, LuPlus, LuX } from "react-icons/lu";
+import { LuPanelLeft, LuX } from "react-icons/lu";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { SignInDialog } from "@/components/auth/sign-in-dialog";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import styles from "./studio-layout.module.css";
+import { StudioNavigation } from "./studio-navigation";
 
 export default function StudioLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -37,36 +38,21 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
     setDrawerOpen(true);
   }
 
-  const navigation = (
-    <nav className={styles.navigation} aria-label="Studio">
-      <Link
-        href="/"
-        className={styles.navLink}
-        onNavigate={(event) => {
-          drawer.current?.close();
-          if (pathname !== "/") return;
+  /** 모바일 메뉴를 닫고, 스튜디오에 있으면 편집 영역만 새로 연다. */
+  const handleNewVideo: NonNullable<LinkProps["onNavigate"]> = (event) => {
+    drawer.current?.close();
+    if (pathname !== "/") return;
 
-          // 같은 페이지에서는 편집 영역만 새로 만들어 영상과 설정을 정리한다.
-          event.preventDefault();
-          setDraftVersion((version) => version + 1);
-          window.scrollTo(0, 0);
-        }}
-      >
-        <LuPlus aria-hidden="true" />
-        New video
-      </Link>
-      <Button disabled variant="ghost" className={styles.navLink}>
-        <LuFilm aria-hidden="true" />
-        My videos
-      </Button>
-    </nav>
-  );
+    event.preventDefault();
+    setDraftVersion((version) => version + 1);
+    window.scrollTo(0, 0);
+  };
 
   return (
     <div className={`${styles.studio} ${expanded ? "" : styles.collapsed}`}>
       <aside id="studio-sidebar" className={styles.sidebar} aria-label="Studio sidebar">
         <span className={styles.wordmark}>Typixel</span>
-        {navigation}
+        <StudioNavigation onNewVideo={handleNewVideo} />
       </aside>
       <dialog
         id="studio-drawer"
@@ -91,7 +77,7 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
               <LuX aria-hidden="true" />
             </Button>
           </div>
-          {navigation}
+          <StudioNavigation onNewVideo={handleNewVideo} />
         </div>
       </dialog>
       <div className={styles.content}>

@@ -18,28 +18,6 @@
   background: var(--color-sidebar);
 }
 
-.navigation {
-  display: grid;
-  gap: 0.25rem;
-  margin-block-start: 1.5rem;
-}
-
-.navigation .navLink {
-  display: flex;
-  min-height: 2.75rem;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.625rem;
-  padding-inline: 0.75rem;
-  border-radius: var(--radius-control);
-  font-size: 0.875rem;
-}
-
-a.navLink:hover {
-  background: var(--color-surface);
-}
-
-.navLink svg,
 .iconButton svg {
   width: 1.125rem;
   height: 1.125rem;
