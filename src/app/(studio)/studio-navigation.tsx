@@ -1,6 +1,5 @@
 import Link, { type LinkProps } from "next/link";
-import { LuFilm, LuPlus } from "react-icons/lu";
-import { Button } from "@/components/ui/button";
+import { LuPlus } from "react-icons/lu";
 import styles from "./studio-navigation.module.css";
 
 export function StudioNavigation({
@@ -14,10 +13,14 @@ export function StudioNavigation({
         <LuPlus aria-hidden="true" />
         New video
       </Link>
-      <Button disabled variant="ghost" className={styles.navLink}>
-        <LuFilm aria-hidden="true" />
-        My videos
-      </Button>
+      <section className={styles.videoSection}>
+        <h2>Drafts</h2>
+        <p>No drafts yet</p>
+      </section>
+      <section className={styles.videoSection}>
+        <h2>My recent videos</h2>
+        <p>No exported videos yet</p>
+      </section>
     </nav>
   );
 }
