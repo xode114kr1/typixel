@@ -9,6 +9,7 @@ type EditorStore = {
   drafts: VideoDraft[];
   activeDraftId: string | null;
   setDraftFile: (file: File) => void;
+  selectDraft: (id: string) => void;
   openNewVideo: () => void;
 };
 
@@ -33,6 +34,12 @@ export const useEditorStore = create<EditorStore>()((set) => ({
         activeDraftId: id,
       };
     }),
+
+  // 목록에 남아 있는 임시 영상만 활성화한다.
+  selectDraft: (id) =>
+    set((state) =>
+      state.drafts.some((draft) => draft.id === id) ? { activeDraftId: id } : state,
+    ),
 
   // 기존 임시 영상을 보관한 채 선택만 해제한다.
   openNewVideo: () => set({ activeDraftId: null }),

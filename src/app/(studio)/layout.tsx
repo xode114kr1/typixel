@@ -15,7 +15,9 @@ import { StudioNavigation } from "./studio-navigation";
 export default function StudioLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
+  const activeDraftId = useEditorStore((state) => state.activeDraftId);
   const openNewVideo = useEditorStore((state) => state.openNewVideo);
+  const selectDraft = useEditorStore((state) => state.selectDraft);
   const [expanded, setExpanded] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [draftVersion, setDraftVersion] = useState(0);
@@ -51,11 +53,17 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
     window.scrollTo(0, 0);
   };
 
+  /** 선택한 임시 영상을 열고 모바일 드로어를 닫는다. */
+  function handleSelectDraft(id: string) {
+    selectDraft(id);
+    drawer.current?.close();
+  }
+
   return (
     <div className={`${styles.studio} ${expanded ? "" : styles.collapsed}`}>
       <aside id="studio-sidebar" className={styles.sidebar} aria-label="Studio sidebar">
         <span className={styles.wordmark}>Typixel</span>
-        <StudioNavigation onNewVideo={handleNewVideo} />
+        <StudioNavigation onNewVideo={handleNewVideo} onSelectDraft={handleSelectDraft} />
       </aside>
       <dialog
         id="studio-drawer"
@@ -80,7 +88,7 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
               <LuX aria-hidden="true" />
             </Button>
           </div>
-          <StudioNavigation onNewVideo={handleNewVideo} />
+          <StudioNavigation onNewVideo={handleNewVideo} onSelectDraft={handleSelectDraft} />
         </div>
       </dialog>
       <div className={styles.content}>
@@ -117,7 +125,7 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
           </div>
         </header>
         <main className={styles.main}>
-          <Fragment key={draftVersion}>{children}</Fragment>
+          <Fragment key={activeDraftId ?? draftVersion}>{children}</Fragment>
         </main>
       </div>
     </div>
