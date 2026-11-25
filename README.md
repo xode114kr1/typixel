@@ -32,6 +32,14 @@ The development database is `typixel`, with user `typixel`, on `127.0.0.1:5432`.
 
 To verify the connection from Prisma, run `npm run db:check`. It generates Prisma Client and runs `SELECT 1` against `DATABASE_URL`.
 
+## Local Google sign-in
+
+Create a **Web application** OAuth client in Google Cloud and add
+`http://localhost:3000/api/auth/callback/google` to its authorized redirect URIs.
+Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in your local `.env`, and
+restart the development server. Keep `BETTER_AUTH_URL` aligned with the origin
+you use to open Typixel.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
