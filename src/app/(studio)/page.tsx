@@ -8,10 +8,14 @@ import { AsciiPlayer } from "@/components/player/ascii-player";
 import { DEFAULT_ASCII_APPEARANCE, DEFAULT_ASCII_TONE } from "@/lib/ascii";
 import { DEFAULT_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
 import { MAX_OUTPUT_VOLUME } from "@/lib/video-volume";
+import { useEditorStore } from "@/stores/editorStore";
 import styles from "./home.module.css";
 
 export default function Home() {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const selectedFile = useEditorStore(
+    (state) => state.drafts.find((draft) => draft.id === state.activeDraftId)?.file ?? null,
+  );
+  const setDraftFile = useEditorStore((state) => state.setDraftFile);
   const [columns, setColumns] = useState(DEFAULT_ASCII_COLUMNS);
   const [tone, setTone] = useState(DEFAULT_ASCII_TONE);
   const [appearance, setAppearance] = useState(DEFAULT_ASCII_APPEARANCE);
@@ -38,7 +42,7 @@ export default function Home() {
         </>
       )}
 
-      <VideoSelection onVideoSelect={setSelectedFile}>
+      <VideoSelection onVideoSelect={setDraftFile}>
         {selectedFile && (
           <AsciiPlayer
             file={selectedFile}

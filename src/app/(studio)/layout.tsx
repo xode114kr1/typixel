@@ -8,12 +8,14 @@ import { AccountMenu } from "@/components/auth/account-menu";
 import { SignInDialog } from "@/components/auth/sign-in-dialog";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import { useEditorStore } from "@/stores/editorStore";
 import styles from "./studio-layout.module.css";
 import { StudioNavigation } from "./studio-navigation";
 
 export default function StudioLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
+  const openNewVideo = useEditorStore((state) => state.openNewVideo);
   const [expanded, setExpanded] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [draftVersion, setDraftVersion] = useState(0);
@@ -38,9 +40,10 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
     setDrawerOpen(true);
   }
 
-  /** 모바일 메뉴를 닫고, 스튜디오에 있으면 편집 영역만 새로 연다. */
+  /** 현재 임시 영상의 선택을 해제하고, 스튜디오에 있으면 편집 UI를 초기화한다. */
   const handleNewVideo: NonNullable<LinkProps["onNavigate"]> = (event) => {
     drawer.current?.close();
+    openNewVideo();
     if (pathname !== "/") return;
 
     event.preventDefault();
