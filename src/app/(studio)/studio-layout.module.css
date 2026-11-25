@@ -113,6 +113,20 @@ a.navLink:hover {
   color: var(--color-copy);
 }
 
+.account {
+  margin-inline-start: auto;
+  color: var(--color-copy);
+  white-space: nowrap;
+}
+
+.profile {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  font-size: 1.375rem;
+}
+
 .main {
   flex: 1;
   min-width: 0;
