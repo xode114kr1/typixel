@@ -13,14 +13,16 @@ export function StudioNavigation({
         <LuPlus aria-hidden="true" />
         New video
       </Link>
-      <section className={styles.videoSection}>
-        <h2>Drafts</h2>
-        <p>No drafts yet</p>
-      </section>
-      <section className={styles.videoSection}>
-        <h2>My recent videos</h2>
-        <p>No exported videos yet</p>
-      </section>
+      <div className={styles.videoSections}>
+        <section className={styles.videoSection}>
+          <h2>Drafts</h2>
+          <p>No drafts yet</p>
+        </section>
+        <section className={styles.videoSection}>
+          <h2>My recent videos</h2>
+          <p>No exported videos yet</p>
+        </section>
+      </div>
     </nav>
   );
 }
