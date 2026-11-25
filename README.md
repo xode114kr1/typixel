@@ -32,6 +32,29 @@ The development database is `typixel`, with user `typixel`, on `127.0.0.1:5432`.
 
 To verify the connection from Prisma, run `npm run db:check`. It generates Prisma Client and runs `SELECT 1` against `DATABASE_URL`.
 
+## Local Google sign-in
+
+1. With PostgreSQL running, apply the checked-in migrations to create the
+   authentication tables:
+
+   ```bash
+   npx prisma migrate deploy
+   ```
+
+2. Generate a random secret and copy the output into `BETTER_AUTH_SECRET` in
+   your local `.env`. Keep that value out of version control.
+
+   ```bash
+   node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+   ```
+
+3. Create a **Web application** OAuth client in Google Cloud and add
+   `http://localhost:3000/api/auth/callback/google` to its authorized redirect URIs.
+   Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env`. Match
+   `BETTER_AUTH_URL` to the origin you use to open Typixel, including the port.
+4. Start or restart the development server with `npm run dev` and select
+   **Sign in** in the studio header.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

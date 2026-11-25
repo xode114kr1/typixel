@@ -4,11 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { LuFilm, LuPanelLeft, LuPlus, LuX } from "react-icons/lu";
+import { AccountMenu } from "@/components/auth/account-menu";
+import { SignInDialog } from "@/components/auth/sign-in-dialog";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 import styles from "./studio-layout.module.css";
 
 export default function StudioLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { data: session } = authClient.useSession();
   const [expanded, setExpanded] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [draftVersion, setDraftVersion] = useState(0);
@@ -115,6 +119,13 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
           </Button>
           <span className={styles.mobileWordmark}>Typixel</span>
           <span>Studio</span>
+          <div className={styles.account}>
+            {session ? (
+              <AccountMenu name={session.user.name} image={session.user.image} />
+            ) : (
+              <SignInDialog />
+            )}
+          </div>
         </header>
         <main className={styles.main}>
           <Fragment key={draftVersion}>{children}</Fragment>

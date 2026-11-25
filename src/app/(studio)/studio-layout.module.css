@@ -113,6 +113,12 @@ a.navLink:hover {
   color: var(--color-copy);
 }
 
+.account {
+  margin-inline-start: auto;
+  color: var(--color-copy);
+  white-space: nowrap;
+}
+
 .main {
   flex: 1;
   min-width: 0;
