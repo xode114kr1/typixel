@@ -43,10 +43,9 @@
 |---|---|
 | `/` | 동영상 선택 및 업로드, ASCII 변환, 편집, 미리보기, 공유 링크 생성 |
 | `/watch/[shareId]` | 몰입형 ASCII 영상 감상 |
-| `/login` | Google OAuth 로그인 |
 | `/my-videos` | 소유 영상 목록 및 관리 |
 
-별도의 회원가입 페이지는 제공하지 않는다. 최초 Google OAuth 로그인 시 회원 계정을 생성한다.
+Google 로그인은 스튜디오 헤더에서 모달로 시작한다. 최초 Google OAuth 로그인 시 회원 계정을 생성한다.
 
 ### 4.1 메인 페이지 (`/`)
 
@@ -142,6 +141,9 @@ Next.js Route Handler가 인증, 메타데이터, 권한, 서명 URL을 관리�
 ### 7.1 회원 인증
 
 - 회원 인증은 Google OAuth 로그인만 지원한다.
+- 스튜디오 헤더 오른쪽의 `Sign in` 버튼으로 로그인 모달을 열고, `Continue with Google`을 선택하면 Google 인증 화면으로 이동한다.
+- 인증에 성공하면 메인 페이지로 돌아오고, 취소하거나 실패하면 로그인 모달에 재시도 안내를 표시한다.
+- 로그인한 사용자의 프로필 버튼을 누르면 이름과 `Sign out`이 표시된다. 로그아웃하면 현재 세션을 종료하고 편집 상태를 유지한 채 헤더에 `Sign in`을 표시한다.
 - 이메일 및 비밀번호 기반 자체 회원가입과 로그인은 구현하지 않는다.
 - 최초 Google 로그인 시 회원 계정을 자동으로 생성한다.
 - 기존 회원은 연결된 Google 계정으로 로그인한다.
@@ -222,9 +224,10 @@ src/
     page.tsx
     watch/[shareId]/page.tsx
     my-videos/page.tsx
-    login/page.tsx
     api/...
   components/
+    auth/sign-in-dialog.tsx
+    auth/account-menu.tsx
     upload/VideoUploader.tsx
     editor/AsciiPreview.tsx
     editor/EditorControls.tsx
