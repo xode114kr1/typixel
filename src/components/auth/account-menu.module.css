@@ -5,6 +5,12 @@
   font-size: 1.375rem;
 }
 
+.avatar {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .menu {
   position: fixed;
   position-anchor: --account-menu-trigger;

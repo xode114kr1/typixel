@@ -121,7 +121,7 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
           <span>Studio</span>
           <div className={styles.account}>
             {session ? (
-              <AccountMenu name={session.user.name} />
+              <AccountMenu name={session.user.name} image={session.user.image} />
             ) : (
               <SignInDialog />
             )}

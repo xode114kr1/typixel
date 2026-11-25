@@ -1,13 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import { useId, useState } from "react";
 import { LuCircleUserRound, LuLogOut } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import styles from "./account-menu.module.css";
 
-export function AccountMenu({ name }: { name: string }) {
+export function AccountMenu({ name, image }: { name: string; image?: string | null }) {
   const menuId = useId();
+  const [failedImage, setFailedImage] = useState<string>();
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -34,7 +36,19 @@ export function AccountMenu({ name }: { name: string }) {
         aria-label="Account options"
         popoverTarget={menuId}
       >
-        <LuCircleUserRound aria-hidden="true" />
+        {image && image !== failedImage ? (
+          <Image
+            src={image}
+            alt=""
+            width={28}
+            height={28}
+            className={styles.avatar}
+            unoptimized
+            onError={() => setFailedImage(image)}
+          />
+        ) : (
+          <LuCircleUserRound aria-hidden="true" />
+        )}
       </Button>
       <div id={menuId} popover="auto" role="group" aria-label="Account options" className={styles.menu}>
         <p className={styles.name}>{name}</p>
