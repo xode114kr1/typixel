@@ -16,7 +16,8 @@ type AdjustmentsPanelProps = {
   onOutputVolumeChange: (volume: number) => void;
   onReset: () => void;
   onExport: () => void;
-  exportStatus?: string;
+  shareUrl?: string;
+  onCopyShareLink: () => void;
 };
 
 const toneControls = [
@@ -37,7 +38,8 @@ export function AdjustmentsPanel({
   onOutputVolumeChange,
   onReset,
   onExport,
-  exportStatus,
+  shareUrl,
+  onCopyShareLink,
 }: AdjustmentsPanelProps) {
   return (
     <aside className={styles.panel} aria-labelledby="adjustments-title">
@@ -131,7 +133,15 @@ export function AdjustmentsPanel({
         This level is used for saved videos. The player volume applies only to playback.
       </p>
       <Button className={styles.exportButton} onClick={onExport}>Export</Button>
-      <p className={styles.exportStatus} role="status">{exportStatus}</p>
+      {shareUrl && (
+        <div className={styles.shareLink}>
+          <label>
+            Share link
+            <input type="url" readOnly value={shareUrl} />
+          </label>
+          <Button variant="secondary" onClick={onCopyShareLink}>Copy link</Button>
+        </div>
+      )}
     </aside>
   );
 }

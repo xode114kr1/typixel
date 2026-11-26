@@ -5,6 +5,7 @@ import { LuLockKeyhole } from "react-icons/lu";
 import { AdjustmentsPanel } from "@/components/editor/adjustments-panel";
 import { VideoSelection } from "@/components/editor/video-selection";
 import { AsciiPlayer } from "@/components/player/ascii-player";
+import { exportVideo } from "@/lib/export-video";
 import { DEFAULT_DRAFT_SETTINGS, useEditorStore } from "@/stores/editorStore";
 import styles from "./home.module.css";
 
@@ -14,19 +15,43 @@ export default function Home() {
   );
   const setDraftFile = useEditorStore((state) => state.setDraftFile);
   const updateDraftSettings = useEditorStore((state) => state.updateDraftSettings);
-  const [preparedExport, setPreparedExport] = useState<{
+  const [exportResult, setExportResult] = useState<{
     file: File;
-    settings: typeof DEFAULT_DRAFT_SETTINGS;
+    shareUrl?: string;
   } | null>(null);
+  const currentShareUrl = exportResult?.file === draft?.file ? exportResult?.shareUrl : undefined;
 
   // 편집 패널의 설정만 초기화하고 재생 위치와 중앙 볼륨 값은 유지한다.
   function resetAdjustments() {
     if (draft) updateDraftSettings(draft.id, DEFAULT_DRAFT_SETTINGS);
   }
 
-  // 현재 편집 화면에서 Export 요청에 넘길 원본과 설정을 준비한다.
-  function prepareExport() {
-    if (draft) setPreparedExport({ file: draft.file, settings: draft.settings });
+  // 버튼을 누른 시점의 파일과 설정을 저장하고 마지막 요청의 결과를 표시한다.
+  async function handleExport() {
+    if (!draft) return;
+
+    const { file, settings } = draft;
+    const request = { file };
+    setExportResult(request);
+
+    try {
+      const { shareId } = await exportVideo(file, settings);
+      const shareUrl = new URL(`/watch/${encodeURIComponent(shareId)}`, window.location.origin).href;
+      setExportResult((result) => result === request ? { file, shareUrl } : result);
+    } catch (error) {
+      console.warn("Could not export the video.", error);
+    }
+  }
+
+  // 표시된 공유 링크를 클립보드에 복사한다.
+  async function copyShareLink() {
+    if (!currentShareUrl) return;
+
+    try {
+      await navigator.clipboard.writeText(currentShareUrl);
+    } catch (error) {
+      console.warn("Could not copy the share link.", error);
+    }
   }
 
   return (
@@ -54,12 +79,9 @@ export default function Home() {
           onAppearanceChange={(appearance) => updateDraftSettings(draft.id, { appearance })}
           onOutputVolumeChange={(outputVolume) => updateDraftSettings(draft.id, { outputVolume })}
           onReset={resetAdjustments}
-          onExport={prepareExport}
-          exportStatus={
-            preparedExport
-              ? `Prepared locally: ${preparedExport.file.name} · ${preparedExport.settings.columns} columns · Output volume ${preparedExport.settings.outputVolume}%`
-              : undefined
-          }
+          onExport={handleExport}
+          shareUrl={currentShareUrl}
+          onCopyShareLink={copyShareLink}
         />
       )}
 
