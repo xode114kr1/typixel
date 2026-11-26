@@ -32,6 +32,13 @@ export const DEFAULT_ASCII_TONE: AsciiTone = {
   threshold: 0,
 };
 
+export const ASCII_TONE_LIMITS = {
+  brightness: { min: 0, max: 200 },
+  contrast: { min: 0, max: 200 },
+  gamma: { min: 0.1, max: 3 },
+  threshold: { min: 0, max: 100 },
+} as const;
+
 /** 0~255 범위의 RGB 값 세 개를 밝기에 대응하는 ASCII 문자로 변환한다. */
 export function rgbToAscii(
   red: number,

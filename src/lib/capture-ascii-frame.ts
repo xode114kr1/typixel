@@ -1,6 +1,7 @@
 import { rgbToAscii, type AsciiTone } from "./ascii";
 
 export const DEFAULT_ASCII_COLUMNS = 128;
+export const MIN_ASCII_COLUMNS = 64;
 export const MAX_ASCII_COLUMNS = 160;
 const MAX_ROWS = 160;
 

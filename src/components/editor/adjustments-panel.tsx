@@ -1,7 +1,7 @@
 import { LuRotateCcw } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
-import type { AsciiAppearance, AsciiCharacterSet, AsciiTone } from "@/lib/ascii";
-import { MAX_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
+import { ASCII_TONE_LIMITS, type AsciiAppearance, type AsciiCharacterSet, type AsciiTone } from "@/lib/ascii";
+import { MAX_ASCII_COLUMNS, MIN_ASCII_COLUMNS } from "@/lib/capture-ascii-frame";
 import { MAX_OUTPUT_VOLUME } from "@/lib/video-volume";
 import styles from "./adjustments-panel.module.css";
 
@@ -20,10 +20,10 @@ type AdjustmentsPanelProps = {
 };
 
 const toneControls = [
-  { key: "brightness", label: "Brightness", min: 0, max: 200, step: 1, unit: "%" },
-  { key: "contrast", label: "Contrast", min: 0, max: 200, step: 1, unit: "%" },
-  { key: "gamma", label: "Gamma", min: 0.1, max: 3, step: 0.1, unit: "" },
-  { key: "threshold", label: "Threshold", min: 0, max: 100, step: 1, unit: "%" },
+  { key: "brightness", label: "Brightness", step: 1, unit: "%" },
+  { key: "contrast", label: "Contrast", step: 1, unit: "%" },
+  { key: "gamma", label: "Gamma", step: 0.1, unit: "" },
+  { key: "threshold", label: "Threshold", step: 1, unit: "%" },
 ] as const;
 
 export function AdjustmentsPanel({
@@ -58,21 +58,20 @@ export function AdjustmentsPanel({
         <span aria-hidden="true">{columns} columns</span>
         <input
           type="range"
-          min={64}
+          min={MIN_ASCII_COLUMNS}
           max={MAX_ASCII_COLUMNS}
           value={columns}
           aria-valuetext={`${columns} columns`}
           onChange={(event) => onColumnsChange(event.currentTarget.valueAsNumber)}
         />
       </label>
-      {toneControls.map(({ key, label, min, max, step, unit }) => (
+      {toneControls.map(({ key, label, step, unit }) => (
         <label key={key} className={styles.control}>
           {label}
           <span aria-hidden="true">{tone[key]}{unit}</span>
           <input
             type="range"
-            min={min}
-            max={max}
+            {...ASCII_TONE_LIMITS[key]}
             step={step}
             value={tone[key]}
             aria-valuetext={`${tone[key]}${unit}`}
