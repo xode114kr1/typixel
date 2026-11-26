@@ -69,7 +69,7 @@ export default function Home() {
       )}
 
       <VideoSelection onVideoSelect={setDraftFile}>
-        {draft && <AsciiPlayer file={draft.file} {...draft.settings} />}
+        {draft && <AsciiPlayer source={draft.file} {...draft.settings} />}
       </VideoSelection>
 
       {draft && (
