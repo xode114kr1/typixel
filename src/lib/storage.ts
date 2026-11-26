@@ -3,6 +3,7 @@ import "server-only";
 import {
   CopyObjectCommand,
   DeleteObjectCommand,
+  GetObjectCommand,
   HeadObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -11,9 +12,10 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const UPLOAD_URL_TTL_SECONDS = 15 * 60;
+const PLAYBACK_URL_TTL_SECONDS = 15 * 60;
 let storage: { client: S3Client; bucket: string; endpointPath: string } | undefined;
 
-/** 업로드 URL을 처음 요청할 때만 서버의 R2 설정을 읽는다. */
+/** R2를 처음 사용할 때 서버의 저장소 설정을 읽는다. */
 function getStorage() {
   if (storage) return storage;
 
@@ -58,6 +60,22 @@ export async function createUploadUrl(storageKey: string, contentType: string, s
   });
 
   return { url, headers: { "Content-Type": contentType } };
+}
+
+/** 비공개 R2 원본을 브라우저에서 재생할 수 있는 단기 URL을 발급한다. */
+export async function createPlaybackUrl(storageKey: string, expiresAt: Date | null) {
+  const signingDate = new Date();
+  const remainingSeconds = expiresAt
+    ? Math.floor((expiresAt.getTime() - signingDate.getTime()) / 1000)
+    : PLAYBACK_URL_TTL_SECONDS;
+  if (remainingSeconds <= 0) return null;
+
+  const { client, bucket } = getStorage();
+  const command = new GetObjectCommand({ Bucket: bucket, Key: storageKey });
+  return getSignedUrl(client, command, {
+    expiresIn: Math.min(PLAYBACK_URL_TTL_SECONDS, remainingSeconds),
+    signingDate,
+  });
 }
 
 /** 업로드된 객체의 크기와 복사에 사용할 ETag를 확인한다. */

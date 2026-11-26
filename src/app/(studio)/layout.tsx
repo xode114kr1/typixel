@@ -1,7 +1,7 @@
 "use client";
 
 import type { LinkProps } from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { LuPanelLeft, LuX } from "react-icons/lu";
 import { AccountMenu } from "@/components/auth/account-menu";
@@ -13,7 +13,7 @@ import styles from "./studio-layout.module.css";
 import { StudioNavigation } from "./studio-navigation";
 
 export default function StudioLayout({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
+  const router = useRouter();
   const { data: session } = authClient.useSession();
   const activeDraftId = useEditorStore((state) => state.activeDraftId);
   const openNewVideo = useEditorStore((state) => state.openNewVideo);
@@ -46,7 +46,7 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
   const handleNewVideo: NonNullable<LinkProps["onNavigate"]> = (event) => {
     drawer.current?.close();
     openNewVideo();
-    if (pathname !== "/") return;
+    if (window.location.pathname !== "/") return;
 
     event.preventDefault();
     setDraftVersion((version) => version + 1);
@@ -57,6 +57,12 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
   function handleSelectDraft(id: string) {
     selectDraft(id);
     drawer.current?.close();
+    if (window.location.pathname !== "/") router.push("/");
+  }
+
+  /** 로그아웃하면 저장된 영상 편집 화면에서 스튜디오로 돌아간다. */
+  function handleSignedOut() {
+    if (window.location.pathname !== "/") router.replace("/");
   }
 
   return (
@@ -118,7 +124,11 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
           <span>Studio</span>
           <div className={styles.account}>
             {session ? (
-              <AccountMenu name={session.user.name} image={session.user.image} />
+              <AccountMenu
+                name={session.user.name}
+                image={session.user.image}
+                onSignOut={handleSignedOut}
+              />
             ) : (
               <SignInDialog />
             )}
