@@ -17,6 +17,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  videos        Video[]
 
   @@unique([email])
   @@map("user")
@@ -68,4 +69,34 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+enum VideoStatus {
+  PENDING_UPLOAD
+  READY
+  FAILED
+  DELETING
+  EXPIRED
+}
+
+model Video {
+  id         String      @id @default(cuid())
+  shareId    String?     @unique
+  ownerId    String
+  owner      User        @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  title      String
+  storageKey String      @unique
+  settings   Json
+  status     VideoStatus @default(PENDING_UPLOAD)
+  sizeBytes  BigInt
+  duration   Float?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  expiresAt  DateTime?
+  deletedAt  DateTime?
+
+  @@index([ownerId, createdAt])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("video")
 }
