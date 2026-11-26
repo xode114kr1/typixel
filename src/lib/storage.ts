@@ -35,17 +35,18 @@ function getStorage() {
   return storage;
 }
 
-/** 브라우저가 지정된 키와 Content-Type으로 직접 PUT할 수 있는 URL을 발급한다. */
-export async function createUploadUrl(storageKey: string, contentType: string) {
+/** 브라우저에서 지정된 키, 형식, 파일 크기로 직접 PUT할 수 있게 서명한다. */
+export async function createUploadUrl(storageKey: string, contentType: string, sizeBytes: number) {
   const { client, bucket } = getStorage();
   const command = new PutObjectCommand({
     Bucket: bucket,
     Key: storageKey,
     ContentType: contentType,
+    ContentLength: sizeBytes,
   });
   const url = await getSignedUrl(client, command, {
     expiresIn: UPLOAD_URL_TTL_SECONDS,
-    signableHeaders: new Set(["content-type"]),
+    signableHeaders: new Set(["content-type", "content-length"]),
   });
 
   return { url, headers: { "Content-Type": contentType } };
