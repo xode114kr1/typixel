@@ -1,10 +1,17 @@
 import "server-only";
 
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  CopyObjectCommand,
+  DeleteObjectCommand,
+  HeadObjectCommand,
+  PutObjectCommand,
+  S3Client,
+  S3ServiceException,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const UPLOAD_URL_TTL_SECONDS = 15 * 60;
-let storage: { client: S3Client; bucket: string } | undefined;
+let storage: { client: S3Client; bucket: string; endpointPath: string } | undefined;
 
 /** 업로드 URL을 처음 요청할 때만 서버의 R2 설정을 읽는다. */
 function getStorage() {
@@ -31,7 +38,8 @@ function getStorage() {
     requestChecksumCalculation: "WHEN_REQUIRED",
   });
 
-  storage = { client, bucket };
+  const endpointPath = new URL(endpoint).pathname.replace(/\/$/, "");
+  storage = { client, bucket, endpointPath };
   return storage;
 }
 
@@ -50,4 +58,44 @@ export async function createUploadUrl(storageKey: string, contentType: string, s
   });
 
   return { url, headers: { "Content-Type": contentType } };
+}
+
+/** 업로드된 객체의 크기와 복사에 사용할 ETag를 확인한다. */
+export async function getUploadedObject(storageKey: string) {
+  const { client, bucket } = getStorage();
+  try {
+    return await client.send(new HeadObjectCommand({ Bucket: bucket, Key: storageKey }));
+  } catch (error) {
+    if (error instanceof S3ServiceException && error.$metadata.httpStatusCode === 404) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+/** 검증한 객체만 서버가 관리하는 최종 키로 복사한다. */
+export async function copyVerifiedUpload(
+  sourceKey: string,
+  destinationKey: string,
+  etag: string,
+) {
+  const { client, bucket, endpointPath } = getStorage();
+  // 기존 PUT과 GET에 적용되는 엔드포인트 경로를 복사 원본의 키에도 포함한다.
+  const encodedKey = sourceKey.split("/").map(encodeURIComponent).join("/");
+  await client.send(new CopyObjectCommand({
+    Bucket: bucket,
+    Key: destinationKey,
+    CopySource: `${encodeURIComponent(bucket)}${endpointPath}/${encodedKey}`,
+    CopySourceIfMatch: etag,
+  }));
+}
+
+/** 정리 실패가 이미 끝난 공유 작업의 응답을 바꾸지 않도록 기록한다. */
+export async function discardVideoObject(storageKey: string) {
+  try {
+    const { client, bucket } = getStorage();
+    await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: storageKey }));
+  } catch (error) {
+    console.error("Could not clean up the video object.", error);
+  }
 }
