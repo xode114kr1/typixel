@@ -55,6 +55,38 @@ To verify the connection from Prisma, run `npm run db:check`. It generates Prism
 4. Start or restart the development server with `npm run dev` and select
    **Sign in** in the studio header.
 
+## Local Cloudflare R2
+
+1. Create a private R2 bucket in Cloudflare. Keep the public development URL
+   and public custom domains disabled.
+2. Create an R2 token with **Object Read & Write** access scoped to that
+   bucket. Set the bucket name and its S3 API endpoint in `R2_BUCKET_NAME` and
+   `R2_ENDPOINT` in your local `.env`. The default endpoint looks like
+   `https://<account-id>.r2.cloudflarestorage.com`.
+   Set the token's keys in `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`.
+3. Under the bucket's **Settings → CORS Policy**, allow direct uploads from
+   your local app origin:
+
+   ```json
+   [
+     {
+       "AllowedOrigins": ["http://localhost:3000"],
+       "AllowedMethods": ["PUT"],
+       "AllowedHeaders": ["Content-Type"]
+     }
+   ]
+   ```
+
+   Use the exact origin you open in your browser, including the port.
+4. Restart the development server after changing `.env`.
+
+The server signs upload URLs for a single object key and content type. The
+browser sends the file to that URL with `PUT` and the returned `Content-Type`
+header. Upload URLs expire after 15 minutes.
+
+[R2 token setup](https://developers.cloudflare.com/r2/api/tokens/) ·
+[R2 CORS configuration](https://developers.cloudflare.com/r2/buckets/cors/)
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
