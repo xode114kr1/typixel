@@ -15,6 +15,8 @@ type AdjustmentsPanelProps = {
   onAppearanceChange: (appearance: AsciiAppearance) => void;
   onOutputVolumeChange: (volume: number) => void;
   onReset: () => void;
+  onExport: () => void;
+  exportStatus?: string;
 };
 
 const toneControls = [
@@ -34,6 +36,8 @@ export function AdjustmentsPanel({
   onAppearanceChange,
   onOutputVolumeChange,
   onReset,
+  onExport,
+  exportStatus,
 }: AdjustmentsPanelProps) {
   return (
     <aside className={styles.panel} aria-labelledby="adjustments-title">
@@ -127,7 +131,8 @@ export function AdjustmentsPanel({
       <p id="output-volume-description" className={styles.note}>
         This level is used for saved videos. The player volume applies only to playback.
       </p>
-      <Button className={styles.exportButton} disabled>Export</Button>
+      <Button className={styles.exportButton} onClick={onExport}>Export</Button>
+      <p className={styles.exportStatus} role="status">{exportStatus}</p>
     </aside>
   );
 }

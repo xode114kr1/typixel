@@ -50,6 +50,16 @@
   margin-block-start: 1.25rem;
 }
 
+.exportStatus {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.exportStatus:not(:empty) {
+  margin-block-start: 0.5rem;
+}
+
 .control input,
 .control select {
   grid-column: 1 / -1;
