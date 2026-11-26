@@ -18,31 +18,7 @@
   color: var(--color-muted);
 }
 
-.preview {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  align-items: start;
-  gap: 1rem;
-  width: min(100%, 76rem);
-  padding-block-start: clamp(2rem, 6vh, 4rem);
-}
-
-.preview .rightsNote {
-  margin-block-start: 0;
-}
-
-@media (min-width: 68rem) {
-  .preview {
-    grid-template-columns: minmax(0, 1fr) minmax(15rem, 18rem);
-  }
-
-  .preview .selectionFeedback,
-  .preview .rightsNote {
-    grid-column: 1 / -1;
-  }
-}
-
-.selectionFeedback p:not(:empty) {
+.selectionFeedback {
   margin-block-start: 0.75rem;
   overflow-wrap: anywhere;
   font-size: 0.875rem;
@@ -53,9 +29,12 @@
   justify-content: center;
   align-items: baseline;
   gap: 0.5rem;
-  margin-block-start: 1rem;
   color: var(--color-muted);
   font-size: 0.8125rem;
+}
+
+.upload .rightsNote {
+  margin-block-start: 1rem;
 }
 
 .rightsNote svg {

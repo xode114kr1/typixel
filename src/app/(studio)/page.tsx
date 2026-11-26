@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { LuLockKeyhole } from "react-icons/lu";
 import { AdjustmentsPanel } from "@/components/editor/adjustments-panel";
+import { EditorLayout } from "@/components/editor/editor-layout";
 import { VideoSelection } from "@/components/editor/video-selection";
 import { AsciiPlayer } from "@/components/player/ascii-player";
 import { Button } from "@/components/ui/button";
@@ -55,24 +56,32 @@ export default function Home() {
     }
   }
 
+  const rightsNote = (
+    <p className={styles.rightsNote}>
+      <LuLockKeyhole aria-hidden="true" />
+      Only select videos you have permission to use, including their audio.
+    </p>
+  );
+
+  if (!draft) {
+    return (
+      <section className={styles.upload} aria-labelledby="upload-title">
+        <h1 id="upload-title">Turn videos into text.</h1>
+        <p className={styles.description}>Create and share your own ASCII videos.</p>
+        <VideoSelection onVideoSelect={setDraftFile} />
+        {rightsNote}
+      </section>
+    );
+  }
+
   return (
-    <section
-      className={`${styles.upload} ${draft ? styles.preview : ""}`}
-      aria-labelledby={draft ? undefined : "upload-title"}
-      aria-label={draft ? "Video editor" : undefined}
-    >
-      {!draft && (
-        <>
-          <h1 id="upload-title">Turn videos into text.</h1>
-          <p className={styles.description}>Create and share your own ASCII videos.</p>
-        </>
+    <EditorLayout
+      preview={(
+        <VideoSelection onVideoSelect={setDraftFile}>
+          <AsciiPlayer source={draft.file} {...draft.settings} />
+        </VideoSelection>
       )}
-
-      <VideoSelection onVideoSelect={setDraftFile}>
-        {draft && <AsciiPlayer source={draft.file} {...draft.settings} />}
-      </VideoSelection>
-
-      {draft && (
+      adjustments={(
         <AdjustmentsPanel
           {...draft.settings}
           onColumnsChange={(columns) => updateDraftSettings(draft.id, { columns })}
@@ -93,15 +102,14 @@ export default function Home() {
           )}
         </AdjustmentsPanel>
       )}
-
-      <div className={styles.selectionFeedback}>
-        <p role="status">{draft && <>Selected video: <strong>{draft.file.name}</strong></>}</p>
-      </div>
-
-      <p className={styles.rightsNote}>
-        <LuLockKeyhole aria-hidden="true" />
-        Only select videos you have permission to use, including their audio.
-      </p>
-    </section>
+      footer={(
+        <>
+          <p className={styles.selectionFeedback} role="status">
+            Selected video: <strong>{draft.file.name}</strong>
+          </p>
+          {rightsNote}
+        </>
+      )}
+    />
   );
 }
