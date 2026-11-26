@@ -6,11 +6,11 @@ import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { LuPanelLeft, LuX } from "react-icons/lu";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { SignInDialog } from "@/components/auth/sign-in-dialog";
+import { StudioNavigation } from "@/components/studio/studio-navigation";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { useEditorStore } from "@/stores/editorStore";
 import styles from "./studio-layout.module.css";
-import { StudioNavigation } from "./studio-navigation";
 
 export default function StudioLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
