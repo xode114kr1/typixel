@@ -5,6 +5,7 @@ import { LuLockKeyhole } from "react-icons/lu";
 import { AdjustmentsPanel } from "@/components/editor/adjustments-panel";
 import { VideoSelection } from "@/components/editor/video-selection";
 import { AsciiPlayer } from "@/components/player/ascii-player";
+import { Button } from "@/components/ui/button";
 import { exportVideo } from "@/lib/export-video";
 import { DEFAULT_DRAFT_SETTINGS, useEditorStore } from "@/stores/editorStore";
 import styles from "./home.module.css";
@@ -79,10 +80,18 @@ export default function Home() {
           onAppearanceChange={(appearance) => updateDraftSettings(draft.id, { appearance })}
           onOutputVolumeChange={(outputVolume) => updateDraftSettings(draft.id, { outputVolume })}
           onReset={resetAdjustments}
-          onExport={handleExport}
-          shareUrl={currentShareUrl}
-          onCopyShareLink={copyShareLink}
-        />
+        >
+          <Button className={styles.exportButton} onClick={handleExport}>Export</Button>
+          {currentShareUrl && (
+            <div className={styles.shareLink}>
+              <label>
+                Share link
+                <input type="url" readOnly value={currentShareUrl} />
+              </label>
+              <Button variant="secondary" onClick={copyShareLink}>Copy link</Button>
+            </div>
+          )}
+        </AdjustmentsPanel>
       )}
 
       <div className={styles.selectionFeedback}>

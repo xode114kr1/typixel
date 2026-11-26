@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { LuRotateCcw } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { ASCII_TONE_LIMITS, type AsciiAppearance, type AsciiCharacterSet, type AsciiTone } from "@/lib/ascii";
@@ -15,9 +16,7 @@ type AdjustmentsPanelProps = {
   onAppearanceChange: (appearance: AsciiAppearance) => void;
   onOutputVolumeChange: (volume: number) => void;
   onReset: () => void;
-  onExport: () => void;
-  shareUrl?: string;
-  onCopyShareLink: () => void;
+  children?: ReactNode;
 };
 
 const toneControls = [
@@ -37,9 +36,7 @@ export function AdjustmentsPanel({
   onAppearanceChange,
   onOutputVolumeChange,
   onReset,
-  onExport,
-  shareUrl,
-  onCopyShareLink,
+  children,
 }: AdjustmentsPanelProps) {
   return (
     <aside className={styles.panel} aria-labelledby="adjustments-title">
@@ -132,16 +129,7 @@ export function AdjustmentsPanel({
       <p id="output-volume-description" className={styles.note}>
         This level is used for saved videos. The player volume applies only to playback.
       </p>
-      <Button className={styles.exportButton} onClick={onExport}>Export</Button>
-      {shareUrl && (
-        <div className={styles.shareLink}>
-          <label>
-            Share link
-            <input type="url" readOnly value={shareUrl} />
-          </label>
-          <Button variant="secondary" onClick={onCopyShareLink}>Copy link</Button>
-        </div>
-      )}
+      {children}
     </aside>
   );
 }
