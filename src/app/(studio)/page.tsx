@@ -1,58 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { LuLockKeyhole } from "react-icons/lu";
 import { AdjustmentsPanel } from "@/components/editor/adjustments-panel";
 import { EditorLayout } from "@/components/editor/editor-layout";
 import { VideoSelection } from "@/components/editor/video-selection";
 import { AsciiPlayer } from "@/components/player/ascii-player";
 import { Button } from "@/components/ui/button";
-import { exportVideo } from "@/lib/export-video";
+import { saveVideo } from "@/lib/save-video";
 import { DEFAULT_DRAFT_SETTINGS, useEditorStore } from "@/stores/editorStore";
 import styles from "./home.module.css";
 
 export default function Home() {
+  const router = useRouter();
   const draft = useEditorStore(
     (state) => state.drafts.find((draft) => draft.id === state.activeDraftId),
   );
   const setDraftFile = useEditorStore((state) => state.setDraftFile);
   const updateDraftSettings = useEditorStore((state) => state.updateDraftSettings);
-  const [exportResult, setExportResult] = useState<{
-    file: File;
-    shareUrl?: string;
-  } | null>(null);
-  const currentShareUrl = exportResult?.file === draft?.file ? exportResult?.shareUrl : undefined;
+  const latestSave = useRef(0);
 
   // 편집 패널의 설정만 초기화하고 재생 위치와 중앙 볼륨 값은 유지한다.
   function resetAdjustments() {
     if (draft) updateDraftSettings(draft.id, DEFAULT_DRAFT_SETTINGS);
   }
 
-  // 버튼을 누른 시점의 파일과 설정을 저장하고 마지막 요청의 결과를 표시한다.
-  async function handleExport() {
+  // 클릭 시점의 파일과 설정을 저장하고 같은 임시 영상을 편집 중일 때 이동한다.
+  async function handleSave() {
     if (!draft) return;
 
-    const { file, settings } = draft;
-    const request = { file };
-    setExportResult(request);
+    const { id, file, settings } = draft;
+    const request = ++latestSave.current;
 
     try {
-      const { shareId } = await exportVideo(file, settings);
-      const shareUrl = new URL(`/watch/${encodeURIComponent(shareId)}`, window.location.origin).href;
-      setExportResult((result) => result === request ? { file, shareUrl } : result);
-    } catch (error) {
-      console.warn("Could not export the video.", error);
-    }
-  }
+      const { videoId } = await saveVideo(file, settings);
+      const { activeDraftId, drafts } = useEditorStore.getState();
+      if (request !== latestSave.current || window.location.pathname !== "/" || activeDraftId !== id) return;
+      if (drafts.find((draft) => draft.id === id)?.file !== file) return;
 
-  // 표시된 공유 링크를 클립보드에 복사한다.
-  async function copyShareLink() {
-    if (!currentShareUrl) return;
-
-    try {
-      await navigator.clipboard.writeText(currentShareUrl);
+      router.push(`/videos/${encodeURIComponent(videoId)}/edit`);
     } catch (error) {
-      console.warn("Could not copy the share link.", error);
+      console.warn("Could not save the video.", error);
     }
   }
 
@@ -90,16 +79,7 @@ export default function Home() {
           onOutputVolumeChange={(outputVolume) => updateDraftSettings(draft.id, { outputVolume })}
           onReset={resetAdjustments}
         >
-          <Button className={styles.exportButton} onClick={handleExport}>Export</Button>
-          {currentShareUrl && (
-            <div className={styles.shareLink}>
-              <label>
-                Share link
-                <input type="url" readOnly value={currentShareUrl} />
-              </label>
-              <Button variant="secondary" onClick={copyShareLink}>Copy link</Button>
-            </div>
-          )}
+          <Button className={styles.saveButton} onClick={handleSave}>Save</Button>
         </AdjustmentsPanel>
       )}
       footer={(
