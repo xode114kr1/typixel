@@ -26,5 +26,13 @@ export default async function EditVideoPage({ params }: EditVideoPageProps) {
 
   const source = await createPlaybackUrl(video.storageKey, video.expiresAt);
   if (!source) notFound();
-  return <SavedVideoEditor key={videoId} title={video.title} source={source} savedSettings={settings.data} />;
+  return (
+    <SavedVideoEditor
+      key={videoId}
+      videoId={videoId}
+      title={video.title}
+      source={source}
+      savedSettings={settings.data}
+    />
+  );
 }
