@@ -9,14 +9,24 @@
   text-align: center;
 }
 
+.header,
 .footer {
   display: grid;
   grid-column: 1 / -1;
   gap: 1rem;
 }
 
+.header {
+  text-align: start;
+}
+
 @media (min-width: 68rem) {
   .editor {
     grid-template-columns: minmax(0, 1fr) minmax(15rem, 18rem);
+  }
+
+  .header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
   }
 }

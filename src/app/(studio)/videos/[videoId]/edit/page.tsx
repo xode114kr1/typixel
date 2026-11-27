@@ -17,7 +17,7 @@ export default async function EditVideoPage({ params }: EditVideoPageProps) {
 
   const video = await getPrisma().video.findFirst({
     where: { id: videoId, ownerId: session.user.id, status: "READY", deletedAt: null },
-    select: { title: true, settings: true, storageKey: true, expiresAt: true },
+    select: { title: true, settings: true, storageKey: true, expiresAt: true, shareId: true },
   });
   if (!video) notFound();
 
@@ -26,12 +26,18 @@ export default async function EditVideoPage({ params }: EditVideoPageProps) {
 
   const source = await createPlaybackUrl(video.storageKey, video.expiresAt);
   if (!source) notFound();
+
+  const sharePath = video.shareId ? `/watch/${encodeURIComponent(video.shareId)}` : null;
+  const appUrl = process.env.BETTER_AUTH_URL;
+  const shareUrl = sharePath && appUrl ? new URL(sharePath, appUrl).href : sharePath;
+
   return (
     <SavedVideoEditor
       key={videoId}
       videoId={videoId}
       title={video.title}
       source={source}
+      shareUrl={shareUrl}
       savedSettings={settings.data}
     />
   );
