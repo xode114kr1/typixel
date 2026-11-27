@@ -1,18 +1,23 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import type { LinkProps } from "next/link";
+import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
-import { LuFilm, LuPanelLeft, LuPlus, LuX } from "react-icons/lu";
+import { LuPanelLeft, LuX } from "react-icons/lu";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { SignInDialog } from "@/components/auth/sign-in-dialog";
+import { StudioNavigation } from "@/components/studio/studio-navigation";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import { useEditorStore } from "@/stores/editorStore";
 import styles from "./studio-layout.module.css";
 
 export default function StudioLayout({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
+  const router = useRouter();
   const { data: session } = authClient.useSession();
+  const activeDraftId = useEditorStore((state) => state.activeDraftId);
+  const openNewVideo = useEditorStore((state) => state.openNewVideo);
+  const selectDraft = useEditorStore((state) => state.selectDraft);
   const [expanded, setExpanded] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [draftVersion, setDraftVersion] = useState(0);
@@ -37,36 +42,34 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
     setDrawerOpen(true);
   }
 
-  const navigation = (
-    <nav className={styles.navigation} aria-label="Studio">
-      <Link
-        href="/"
-        className={styles.navLink}
-        onNavigate={(event) => {
-          drawer.current?.close();
-          if (pathname !== "/") return;
+  /** 현재 임시 영상의 선택을 해제하고, 스튜디오에 있으면 편집 UI를 초기화한다. */
+  const handleNewVideo: NonNullable<LinkProps["onNavigate"]> = (event) => {
+    drawer.current?.close();
+    openNewVideo();
+    if (window.location.pathname !== "/") return;
 
-          // 같은 페이지에서는 편집 영역만 새로 만들어 영상과 설정을 정리한다.
-          event.preventDefault();
-          setDraftVersion((version) => version + 1);
-          window.scrollTo(0, 0);
-        }}
-      >
-        <LuPlus aria-hidden="true" />
-        New video
-      </Link>
-      <Button disabled variant="ghost" className={styles.navLink}>
-        <LuFilm aria-hidden="true" />
-        My videos
-      </Button>
-    </nav>
-  );
+    event.preventDefault();
+    setDraftVersion((version) => version + 1);
+    window.scrollTo(0, 0);
+  };
+
+  /** 선택한 임시 영상을 열고 모바일 드로어를 닫는다. */
+  function handleSelectDraft(id: string) {
+    selectDraft(id);
+    drawer.current?.close();
+    if (window.location.pathname !== "/") router.push("/");
+  }
+
+  /** 로그아웃하면 저장된 영상 편집 화면에서 스튜디오로 돌아간다. */
+  function handleSignedOut() {
+    if (window.location.pathname !== "/") router.replace("/");
+  }
 
   return (
     <div className={`${styles.studio} ${expanded ? "" : styles.collapsed}`}>
       <aside id="studio-sidebar" className={styles.sidebar} aria-label="Studio sidebar">
         <span className={styles.wordmark}>Typixel</span>
-        {navigation}
+        <StudioNavigation onNewVideo={handleNewVideo} onSelectDraft={handleSelectDraft} />
       </aside>
       <dialog
         id="studio-drawer"
@@ -91,7 +94,7 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
               <LuX aria-hidden="true" />
             </Button>
           </div>
-          {navigation}
+          <StudioNavigation onNewVideo={handleNewVideo} onSelectDraft={handleSelectDraft} />
         </div>
       </dialog>
       <div className={styles.content}>
@@ -121,14 +124,18 @@ export default function StudioLayout({ children }: { children: ReactNode }) {
           <span>Studio</span>
           <div className={styles.account}>
             {session ? (
-              <AccountMenu name={session.user.name} image={session.user.image} />
+              <AccountMenu
+                name={session.user.name}
+                image={session.user.image}
+                onSignOut={handleSignedOut}
+              />
             ) : (
               <SignInDialog />
             )}
           </div>
         </header>
         <main className={styles.main}>
-          <Fragment key={draftVersion}>{children}</Fragment>
+          <Fragment key={activeDraftId ?? draftVersion}>{children}</Fragment>
         </main>
       </div>
     </div>

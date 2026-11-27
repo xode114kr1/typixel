@@ -7,7 +7,11 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import styles from "./account-menu.module.css";
 
-export function AccountMenu({ name, image }: { name: string; image?: string | null }) {
+export function AccountMenu({ name, image, onSignOut }: {
+  name: string;
+  image?: string | null;
+  onSignOut?: () => void;
+}) {
   const menuId = useId();
   const [failedImage, setFailedImage] = useState<string>();
   const [pending, setPending] = useState(false);
@@ -21,6 +25,7 @@ export function AccountMenu({ name, image }: { name: string; image?: string | nu
     try {
       const { error } = await authClient.signOut();
       if (error) setFailed(true);
+      else onSignOut?.();
     } catch {
       setFailed(true);
     } finally {

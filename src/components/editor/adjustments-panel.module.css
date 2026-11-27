@@ -45,11 +45,6 @@
   font-size: 0.75rem;
 }
 
-.exportButton {
-  width: 100%;
-  margin-block-start: 1.25rem;
-}
-
 .control input,
 .control select {
   grid-column: 1 / -1;
